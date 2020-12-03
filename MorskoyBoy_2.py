@@ -4,7 +4,7 @@ import random
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 
-block_size = 30
+block_size = 50
 left_margin = 100
 upper_margin = 80
 
@@ -19,9 +19,11 @@ font_size = int(block_size / 1.5)
 
 font = pygame.font.SysFont('notosans', font_size)
 
+
 class ShipsOnGrid:
     def __init__(self):
-        self.available_blocks = set((a, b) for a in range(1, 11) for b in range(1, 11))
+        self.available_blocks = set((a, b)
+                                    for a in range(1, 11) for b in range(1, 11))
         self.ships_set = set()
         self.ships = self.populate_grid()
 
@@ -37,9 +39,11 @@ class ShipsOnGrid:
         for _ in range(number_of_blocks):
             ship_coordinates.append((x, y))
             if not x_or_y:
-                str_rev, x = self.add_block_to_ship(x, str_rev, x_or_y, ship_coordinates)
+                str_rev, x = self.add_block_to_ship(
+                    x, str_rev, x_or_y, ship_coordinates)
             else:
-                str_rev, y = self.add_block_to_ship(y, str_rev, x_or_y, ship_coordinates)
+                str_rev, y = self.add_block_to_ship(
+                    y, str_rev, x_or_y, ship_coordinates)
         if self.is_ship_valid(ship_coordinates):
             return ship_coordinates
         return self.create_ship(number_of_blocks, available_blocks)
@@ -50,7 +54,7 @@ class ShipsOnGrid:
             return str_rev, ship_coordinates[0][x_or_y] + str_rev
         else:
             return str_rev, ship_coordinates[-1][x_or_y] + str_rev
-    
+
     def is_ship_valid(self, new_ship):
         ship = set(new_ship)
         return ship.issubset(self.available_blocks)
@@ -58,7 +62,7 @@ class ShipsOnGrid:
     def add_new_ship_to_set(self, new_ship):
         for elem in new_ship:
             self.ships_set.add(elem)
-        
+
     def update_available_blocks_for_creating_ships(self, new_ship):
         for elem in new_ship:
             for k in range(-1, 2):
@@ -70,7 +74,8 @@ class ShipsOnGrid:
         ships_coordinates_list = []
         for number_of_blocks in range(4, 0, -1):
             for _ in range(5-number_of_blocks):
-                new_ship = self.create_ship(number_of_blocks, self.available_blocks)
+                new_ship = self.create_ship(
+                    number_of_blocks, self.available_blocks)
                 ships_coordinates_list.append(new_ship)
                 self.add_new_ship_to_set(new_ship)
                 self.update_available_blocks_for_creating_ships(new_ship)
@@ -80,12 +85,13 @@ class ShipsOnGrid:
 computer = ShipsOnGrid()
 human = ShipsOnGrid()
 
+
 def draw_ships(ships_coordinates_list):
     for elem in ships_coordinates_list:
         ship = sorted(elem)
         x_start = ship[0][0]
         y_start = ship[0][1]
-        # Vert 
+        # Vert
         if len(ship) > 1 and ship[0][0] == ship[1][0]:
             ship_width = block_size
             ship_height = block_size * len(ship)
@@ -97,7 +103,8 @@ def draw_ships(ships_coordinates_list):
         y = block_size * (y_start - 1) + upper_margin
         if ships_coordinates_list == human.ships:
             x += 15 * block_size
-        pygame.draw.rect(screen, BLACK, ((x, y), (ship_width, ship_height)), width=block_size//10)
+        pygame.draw.rect(
+            screen, BLACK, ((x, y), (ship_width, ship_height)), width=block_size//10)
 
 
 def draw_grid():
@@ -150,7 +157,6 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_over = True
-
 
 
 main()
