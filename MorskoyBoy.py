@@ -20,7 +20,8 @@ pygame.display.set_caption("Morskoy Boy")
 font_size = int(block_size / 1.5)
 
 font = pygame.font.SysFont('notosans', font_size)
-computer_available_to_fire_set = {(a, b) for a in range(1, 11) for b in range(1, 11)}
+computer_available_to_fire_set = {(a, b)
+                                  for a in range(1, 11) for b in range(1, 11)}
 around_last_computer_hit_set = set()
 hit_blocks = set()
 dotted_set = set()
@@ -30,9 +31,49 @@ last_hits_list = []
 destroyed_ships_list = []
 
 
+class Grid:
+    def __init__(self, title, offset):
+        self.title = title
+        self.offset = offset
+        self.draw_grid()
+        self.sign_grids()
+        self.add_nums_letters_to_grid()
+
+    def draw_grid(self):
+        for i in range(11):
+            # Horizontal lines
+            pygame.draw.line(screen, BLACK, (left_margin+self.offset, upper_margin+i*block_size),
+                             (left_margin+10*block_size+self.offset, upper_margin+i*block_size), 1)
+            # Vertical lines
+            pygame.draw.line(screen, BLACK, (left_margin+i*block_size+self.offset, upper_margin),
+                             (left_margin+i*block_size+self.offset, upper_margin+10*block_size), 1)
+
+    def add_nums_letters_to_grid(self):
+        for i in range(10):
+            num_ver = font.render(str(i+1), True, BLACK)
+            letters_hor = font.render(LETTERS[i], True, BLACK)
+            num_ver_width = num_ver.get_width()
+            num_ver_height = num_ver.get_height()
+            letters_hor_width = letters_hor.get_width()
+
+            # Ver num grid1
+            screen.blit(num_ver, (left_margin - (block_size//2+num_ver_width//2)+self.offset,
+                                  upper_margin + i*block_size + (block_size//2 - num_ver_height//2)))
+            # Hor letters grid1
+            screen.blit(letters_hor, (left_margin + i*block_size + (block_size //
+                                                                    2 - letters_hor_width//2)+self.offset, upper_margin + 10*block_size))
+
+    def sign_grids(self):
+        player = font.render(self.title, True, BLACK)
+        sign_width = player.get_width()
+        screen.blit(player, (left_margin + 5*block_size - sign_width //
+                             2+self.offset, upper_margin - block_size//2 - font_size))
+
+
 class ShipsOnGrid:
     def __init__(self):
-        self.available_blocks = {(a, b) for a in range(1, 11) for b in range(1, 11)}
+        self.available_blocks = {(a, b) for a in range(1, 11)
+                                 for b in range(1, 11)}
         self.ships_set = set()
         self.ships = self.populate_grid()
 
@@ -91,12 +132,6 @@ class ShipsOnGrid:
         return ships_coordinates_list
 
 
-computer = ShipsOnGrid()
-human = ShipsOnGrid()
-computer_ships_working = copy.deepcopy(computer.ships)
-human_ships_working = copy.deepcopy(human.ships)
-
-
 def draw_ships(ships_coordinates_list):
     for elem in ships_coordinates_list:
         ship = sorted(elem)
@@ -116,44 +151,6 @@ def draw_ships(ships_coordinates_list):
             x += 15 * block_size
         pygame.draw.rect(
             screen, BLACK, ((x, y), (ship_width, ship_height)), width=block_size//10)
-
-class Grid:
-    def __init__(self, title, offset):
-        self.title = title
-        self.offset = offset
-        self.draw_grid()
-        self.sign_grids()
-        self.add_nums_letters_to_grid()
-
-    def draw_grid(self):
-        for i in range(11):
-            # Horizontal lines
-            pygame.draw.line(screen, BLACK, (left_margin+self.offset, upper_margin+i*block_size),
-                            (left_margin+10*block_size+self.offset, upper_margin+i*block_size), 1)
-            # Vertical lines
-            pygame.draw.line(screen, BLACK, (left_margin+i*block_size+self.offset, upper_margin),
-                            (left_margin+i*block_size+self.offset, upper_margin+10*block_size), 1)
-
-    def add_nums_letters_to_grid(self):
-        for i in range(10):
-            num_ver = font.render(str(i+1), True, BLACK)
-            letters_hor = font.render(LETTERS[i], True, BLACK)
-            num_ver_width = num_ver.get_width()
-            num_ver_height = num_ver.get_height()
-            letters_hor_width = letters_hor.get_width()
-
-            # Ver num grid1
-            screen.blit(num_ver, (left_margin - (block_size//2+num_ver_width//2)+self.offset,
-                                    upper_margin + i*block_size + (block_size//2 - num_ver_height//2)))
-            # Hor letters grid1
-            screen.blit(letters_hor, (left_margin + i*block_size + (block_size //
-                                                                    2 - letters_hor_width//2)+self.offset, upper_margin + 10*block_size))
-
-    def sign_grids(self):
-        player = font.render(self.title, True, BLACK)
-        sign_width = player.get_width()
-        screen.blit(player, (left_margin + 5*block_size - sign_width //
-                            2+self.offset, upper_margin - block_size//2 - font_size))
 
 
 def computer_shoots(set_to_shoot_from):
@@ -232,6 +229,7 @@ def update_around_last_computer_hit(fired_block, computer_hits=True):
     computer_available_to_fire_set -= around_last_computer_hit_set
     computer_available_to_fire_set -= dotted_set_for_computer_not_to_shoot
 
+
 def computer_first_hit(fired_block):
     xhit, yhit = fired_block
     if 1 < xhit:
@@ -242,6 +240,7 @@ def computer_first_hit(fired_block):
         around_last_computer_hit_set.add((xhit, yhit-1))
     if yhit < 10:
         around_last_computer_hit_set.add((xhit, yhit+1))
+
 
 def computer_hits_twice():
     last_hits_list.sort()
@@ -257,7 +256,7 @@ def computer_hits_twice():
                 new_around_last_hit_set.add((x1, y1 - 1))
             if y2 < 10:
                 new_around_last_hit_set.add((x1, y2 + 1))
-        
+
         elif y1 == y2:
             if 1 < x1:
                 new_around_last_hit_set.add((x1 - 1, y1))
@@ -265,6 +264,7 @@ def computer_hits_twice():
                 new_around_last_hit_set.add((x2 + 1, y1))
 
     return new_around_last_hit_set
+
 
 def update_dotted_and_hit_sets(fired_block, computer_turn, diagonal_only=True):
     global dotted_set
@@ -307,6 +307,12 @@ def draw_hit_blocks(hit_blocks):
                          (x1+block_size, y1+block_size), block_size//6)
         pygame.draw.line(screen, BLACK, (x1, y1+block_size),
                          (x1+block_size, y1), block_size//6)
+
+
+computer = ShipsOnGrid()
+human = ShipsOnGrid()
+computer_ships_working = copy.deepcopy(computer.ships)
+human_ships_working = copy.deepcopy(human.ships)
 
 
 def main():
