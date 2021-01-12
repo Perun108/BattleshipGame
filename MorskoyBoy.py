@@ -10,6 +10,7 @@ left_margin = 100
 upper_margin = 80
 
 size = (left_margin+30*block_size, upper_margin+15*block_size)
+LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
 
 pygame.init()
 
@@ -19,21 +20,19 @@ pygame.display.set_caption("Morskoy Boy")
 font_size = int(block_size / 1.5)
 
 font = pygame.font.SysFont('notosans', font_size)
-computer_available_to_fire_set = set((a, b)
-                                     for a in range(1, 11) for b in range(1, 11))
+computer_available_to_fire_set = {(a, b) for a in range(1, 11) for b in range(1, 11)}
 around_last_computer_hit_set = set()
 hit_blocks = set()
 dotted_set = set()
-dotted_set_for_computer_to_shoot = set()
-hit_blocks_for_computer_to_shoot = set()
+dotted_set_for_computer_not_to_shoot = set()
+hit_blocks_for_computer_not_to_shoot = set()
 last_hits_list = []
 destroyed_ships_list = []
 
 
 class ShipsOnGrid:
     def __init__(self):
-        self.available_blocks = set((a, b)
-                                    for a in range(1, 11) for b in range(1, 11))
+        self.available_blocks = {(a, b) for a in range(1, 11) for b in range(1, 11)}
         self.ships_set = set()
         self.ships = self.populate_grid()
 
@@ -118,54 +117,43 @@ def draw_ships(ships_coordinates_list):
         pygame.draw.rect(
             screen, BLACK, ((x, y), (ship_width, ship_height)), width=block_size//10)
 
+class Grid:
+    def __init__(self, title, offset):
+        self.title = title
+        self.offset = offset
+        self.draw_grid()
+        self.sign_grids()
+        self.add_nums_letters_to_grid()
 
-def draw_grid():
-    letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
-    for i in range(11):
-        # Hor grid1
-        pygame.draw.line(screen, BLACK, (left_margin, upper_margin+i*block_size),
-                         (left_margin+10*block_size, upper_margin+i*block_size), 1)
-        # Vert grid1
-        pygame.draw.line(screen, BLACK, (left_margin+i*block_size, upper_margin),
-                         (left_margin+i*block_size, upper_margin+10*block_size), 1)
-        # Hor grid2
-        pygame.draw.line(screen, BLACK, (left_margin+15*block_size, upper_margin +
-                                         i*block_size), (left_margin+25*block_size, upper_margin+i*block_size), 1)
-        # Vert grid2
-        pygame.draw.line(screen, BLACK, (left_margin+(i+15)*block_size, upper_margin),
-                         (left_margin+(i+15)*block_size, upper_margin+10*block_size), 1)
+    def draw_grid(self):
+        for i in range(11):
+            # Horizontal lines
+            pygame.draw.line(screen, BLACK, (left_margin+self.offset, upper_margin+i*block_size),
+                            (left_margin+10*block_size+self.offset, upper_margin+i*block_size), 1)
+            # Vertical lines
+            pygame.draw.line(screen, BLACK, (left_margin+i*block_size+self.offset, upper_margin),
+                            (left_margin+i*block_size+self.offset, upper_margin+10*block_size), 1)
 
-        if i < 10:
+    def add_nums_letters_to_grid(self):
+        for i in range(10):
             num_ver = font.render(str(i+1), True, BLACK)
-            letters_hor = font.render(letters[i], True, BLACK)
-
+            letters_hor = font.render(LETTERS[i], True, BLACK)
             num_ver_width = num_ver.get_width()
             num_ver_height = num_ver.get_height()
             letters_hor_width = letters_hor.get_width()
 
             # Ver num grid1
-            screen.blit(num_ver, (left_margin - (block_size//2+num_ver_width//2),
-                                  upper_margin + i*block_size + (block_size//2 - num_ver_height//2)))
+            screen.blit(num_ver, (left_margin - (block_size//2+num_ver_width//2)+self.offset,
+                                    upper_margin + i*block_size + (block_size//2 - num_ver_height//2)))
             # Hor letters grid1
             screen.blit(letters_hor, (left_margin + i*block_size + (block_size //
-                                                                    2 - letters_hor_width//2), upper_margin + 10*block_size))
-            # Ver num grid2
-            screen.blit(num_ver, (left_margin - (block_size//2+num_ver_width//2) + 15 *
-                                  block_size, upper_margin + i*block_size + (block_size//2 - num_ver_height//2)))
-            # Hor letters grid2
-            screen.blit(letters_hor, (left_margin + i*block_size + (block_size//2 -
-                                                                    letters_hor_width//2) + 15*block_size, upper_margin + 10*block_size))
+                                                                    2 - letters_hor_width//2)+self.offset, upper_margin + 10*block_size))
 
-
-def sign_grids():
-    player1 = font.render("COMPUTER", True, BLACK)
-    player2 = font.render("HUMAN", True, BLACK)
-    sign1_width = player1.get_width()
-    sign2_width = player2.get_width()
-    screen.blit(player1, (left_margin + 5*block_size - sign1_width //
-                          2, upper_margin - block_size//2 - font_size))
-    screen.blit(player2, (left_margin + 20*block_size - sign2_width //
-                          2, upper_margin - block_size//2 - font_size))
+    def sign_grids(self):
+        player = font.render(self.title, True, BLACK)
+        sign_width = player.get_width()
+        screen.blit(player, (left_margin + 5*block_size - sign_width //
+                            2+self.offset, upper_margin - block_size//2 - font_size))
 
 
 def computer_shoots(set_to_shoot_from):
@@ -215,7 +203,7 @@ def put_dot_on_missed_block(fired_block, computer_turn=False):
         dotted_set.add(fired_block)
     else:
         dotted_set.add((fired_block[0] + 15, fired_block[1]))
-        dotted_set_for_computer_to_shoot.add(fired_block)
+        dotted_set_for_computer_not_to_shoot.add(fired_block)
 
 
 def draw_destroyed_ships(ind, opponents_ships_list, computer_turn, diagonal_only=False):
@@ -231,57 +219,52 @@ def draw_destroyed_ships(ind, opponents_ships_list, computer_turn, diagonal_only
 def update_around_last_computer_hit(fired_block, computer_hits=True):
     global around_last_computer_hit_set, computer_available_to_fire_set
     if computer_hits and fired_block in around_last_computer_hit_set:
-        new_around_last_hit_set = set()
-        for i in range(len(last_hits_list)-1):
-            if last_hits_list[i][0] == last_hits_list[i+1][0]:
-                if 1 < last_hits_list[i][1]:
-                    new_around_last_hit_set.add(
-                        (last_hits_list[i][0], last_hits_list[i][1] - 1))
-                if 1 < last_hits_list[i+1][1]:
-                    new_around_last_hit_set.add(
-                        (last_hits_list[i][0], last_hits_list[i+1][1] - 1))
-                if last_hits_list[i][1] < 10:
-                    new_around_last_hit_set.add(
-                        (last_hits_list[i][0], last_hits_list[i][1] + 1))
-                if last_hits_list[i+1][1] < 10:
-                    new_around_last_hit_set.add(
-                        (last_hits_list[i][0], last_hits_list[i+1][1] + 1))
-
-            elif last_hits_list[i][1] == last_hits_list[i+1][1]:
-                if 1 < last_hits_list[i][0]:
-                    new_around_last_hit_set.add(
-                        (last_hits_list[i][0] - 1, last_hits_list[i][1]))
-                if 1 < last_hits_list[i+1][0]:
-                    new_around_last_hit_set.add(
-                        (last_hits_list[i+1][0] - 1, last_hits_list[i][1]))
-                if last_hits_list[i][0] < 10:
-                    new_around_last_hit_set.add(
-                        (last_hits_list[i][0] + 1, last_hits_list[i][1]))
-                if last_hits_list[i+1][0] < 10:
-                    new_around_last_hit_set.add(
-                        (last_hits_list[i+1][0] + 1, last_hits_list[i][1]))
-
-        around_last_computer_hit_set = new_around_last_hit_set
+        around_last_computer_hit_set = computer_hits_twice()
 
     elif computer_hits and fired_block not in around_last_computer_hit_set:
-        xhit, yhit = fired_block
-        if 1 < xhit:
-            around_last_computer_hit_set.add((xhit-1, yhit))
-        if 1 < yhit:
-            around_last_computer_hit_set.add((xhit, yhit-1))
-        if xhit < 10:
-            around_last_computer_hit_set.add((xhit+1, yhit))
-        if yhit < 10:
-            around_last_computer_hit_set.add((xhit, yhit+1))
+        computer_first_hit(fired_block)
 
     elif not computer_hits:
         around_last_computer_hit_set.discard(fired_block)
 
-    around_last_computer_hit_set -= dotted_set_for_computer_to_shoot
-    around_last_computer_hit_set -= hit_blocks_for_computer_to_shoot
+    around_last_computer_hit_set -= dotted_set_for_computer_not_to_shoot
+    around_last_computer_hit_set -= hit_blocks_for_computer_not_to_shoot
     computer_available_to_fire_set -= around_last_computer_hit_set
-    computer_available_to_fire_set -= dotted_set_for_computer_to_shoot
+    computer_available_to_fire_set -= dotted_set_for_computer_not_to_shoot
 
+def computer_first_hit(fired_block):
+    xhit, yhit = fired_block
+    if 1 < xhit:
+        around_last_computer_hit_set.add((xhit-1, yhit))
+    if xhit < 10:
+        around_last_computer_hit_set.add((xhit+1, yhit))
+    if 1 < yhit:
+        around_last_computer_hit_set.add((xhit, yhit-1))
+    if yhit < 10:
+        around_last_computer_hit_set.add((xhit, yhit+1))
+
+def computer_hits_twice():
+    last_hits_list.sort()
+    new_around_last_hit_set = set()
+    for i in range(len(last_hits_list)-1):
+        x1 = last_hits_list[i][0]
+        x2 = last_hits_list[i+1][0]
+        y1 = last_hits_list[i][1]
+        y2 = last_hits_list[i+1][1]
+
+        if x1 == x2:
+            if y1 > 1:
+                new_around_last_hit_set.add((x1, y1 - 1))
+            if y2 < 10:
+                new_around_last_hit_set.add((x1, y2 + 1))
+        
+        elif y1 == y2:
+            if 1 < x1:
+                new_around_last_hit_set.add((x1 - 1, y1))
+            if x2 < 10:
+                new_around_last_hit_set.add((x2 + 1, y1))
+
+    return new_around_last_hit_set
 
 def update_dotted_and_hit_sets(fired_block, computer_turn, diagonal_only=True):
     global dotted_set
@@ -291,7 +274,7 @@ def update_dotted_and_hit_sets(fired_block, computer_turn, diagonal_only=True):
         x += 15
         a += 15
         b += 15
-        hit_blocks_for_computer_to_shoot.add(fired_block)
+        hit_blocks_for_computer_not_to_shoot.add(fired_block)
     hit_blocks.add((x, y))
     for i in range(-1, 2):
         for j in range(-1, 2):
@@ -299,13 +282,13 @@ def update_dotted_and_hit_sets(fired_block, computer_turn, diagonal_only=True):
                 if i != 0 and j != 0 and a < x + i < b and 0 < y + j < 11:
                     dotted_set.add((x+i, y+j))
                     if computer_turn:
-                        dotted_set_for_computer_to_shoot.add(
+                        dotted_set_for_computer_not_to_shoot.add(
                             (fired_block[0]+i, y+j))
             else:
                 if a < x + i < b and 0 < y + j < 11:
                     dotted_set.add((x+i, y+j))
                     if computer_turn:
-                        dotted_set_for_computer_to_shoot.add((
+                        dotted_set_for_computer_not_to_shoot.add((
                             fired_block[0]+i, y+j))
     dotted_set -= hit_blocks
 
@@ -331,8 +314,8 @@ def main():
     computer_turn = False
 
     screen.fill(WHITE)
-    draw_grid()
-    sign_grids()
+    computer_grid = Grid("COMPUTER", 0)
+    human_grid = Grid("HUMAN", 15*block_size)
     # draw_ships(computer.ships)
     draw_ships(human.ships)
     pygame.display.update()
