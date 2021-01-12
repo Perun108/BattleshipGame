@@ -36,7 +36,7 @@ class Grid:
         self.title = title
         self.offset = offset
         self.draw_grid()
-        self.sign_grids()
+        self.sign_grid()
         self.add_nums_letters_to_grid()
 
     def draw_grid(self):
@@ -63,7 +63,7 @@ class Grid:
             screen.blit(letters_hor, (left_margin + i*block_size + (block_size //
                                                                     2 - letters_hor_width//2)+self.offset, upper_margin + 10*block_size))
 
-    def sign_grids(self):
+    def sign_grid(self):
         player = font.render(self.title, True, BLACK)
         sign_width = player.get_width()
         screen.blit(player, (left_margin + 5*block_size - sign_width //
