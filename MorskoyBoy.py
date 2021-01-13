@@ -116,7 +116,7 @@ class AutoShips:
         for elem in new_ship:
             for k in range(-1, 2):
                 for m in range(-1, 2):
-                    if 0 < (elem[0]+k) < 11 and 0 < (elem[1]+m) < 11:
+                    if 0+self.offset < (elem[0]+k) < 11+self.offset and 0 < (elem[1]+m) < 11:
                         self.available_blocks.discard((elem[0]+k, elem[1]+m))
 
     def populate_grid(self):
