@@ -298,7 +298,7 @@ def main():
     screen.fill(WHITE)
     computer_grid = Grid("COMPUTER", 0)
     human_grid = Grid("HUMAN", 15*block_size)
-    draw_ships(computer.ships)
+    # draw_ships(computer.ships)
     draw_ships(human.ships)
     pygame.display.update()
 
