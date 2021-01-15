@@ -296,6 +296,9 @@ def check_hit_or_miss(fired_block, opponents_ships_list, computer_turn, opponent
     return False
 
 def update_destroyed_ships(ind, computer_turn, opponents_ships_list_original_copy):
+    """Draws dots around and 'X's within a destroyed ship.
+    Draws rectangle around destroyed computer ships on grid1 (that were not visible before destruction)
+    """
     ship = sorted(opponents_ships_list_original_copy[ind])
     for i in range(-1, 1):
         update_dotted_and_hit_sets(ship[i], computer_turn, False)
