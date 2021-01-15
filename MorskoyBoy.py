@@ -224,6 +224,11 @@ class AutoShips:
         self.ships_set.update(new_ship)
 
     def update_available_blocks_for_creating_ships(self, new_ship):
+        """Removes all blocks occupied by a ship and around it from the available blocks set
+
+        Args:
+            new_ship ([type]): list of tuples with a newly created ship's coordinates
+        """
         for elem in new_ship:
             for k in range(-1, 2):
                 for m in range(-1, 2):
@@ -231,6 +236,12 @@ class AutoShips:
                         self.available_blocks.discard((elem[0]+k, elem[1]+m))
 
     def populate_grid(self):
+        """Creates needed number of each type of ships by calling the create_ship method.
+                Adds every ship to the ships list, ships_set and updates the available blocks.
+
+        Returns:
+            list: the 2d list of all ships
+        """
         ships_coordinates_list = []
         for number_of_blocks in range(4, 0, -1):
             for _ in range(5-number_of_blocks):
