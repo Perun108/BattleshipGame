@@ -305,6 +305,12 @@ def update_destroyed_ships(ind, computer_turn, opponents_ships_list_original_cop
 
 
 def update_around_last_computer_hit(fired_block, computer_hits=True):
+    """Updates around_last_computer_hit_set (which is used to choose for computer to fire from) if it
+    hit the ship but not destroyed it). Adds to this set vertical or horizontal blocks around the
+    block that was last hit. Then removes those block from that set which were shot at but missed.
+    around_last_computer_hit_set makes computer choose the right blocks to quickly destroy the ship
+    instead of just randomly shooting at completely random blocks.
+    """
     global around_last_computer_hit_set, computer_available_to_fire_set
     if computer_hits and fired_block in around_last_computer_hit_set:
         around_last_computer_hit_set = computer_hits_twice()
@@ -355,6 +361,10 @@ def computer_hits_twice():
 
 
 def update_dotted_and_hit_sets(fired_block, computer_turn, diagonal_only=True):
+    """Puts dots in center of diagonal or all around a block that was hit (either by human or
+    by computer). Adds all diagonal blocks or all-around chosen block to a separate set
+    block: hit block (tuple)
+    """
     global dotted_set
     x, y = fired_block
     a, b = 0, 11
@@ -362,7 +372,7 @@ def update_dotted_and_hit_sets(fired_block, computer_turn, diagonal_only=True):
         a += 15
         b += 15
         hit_blocks_for_computer_not_to_shoot.add(fired_block)
-    hit_blocks.add((x, y))
+    hit_blocks.add(fired_block)
     for i in range(-1, 2):
         for j in range(-1, 2):
             if diagonal_only:
