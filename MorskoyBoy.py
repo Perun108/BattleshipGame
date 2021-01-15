@@ -256,6 +256,8 @@ class AutoShips:
 # ===========Shooting section==============
 
 def computer_shoots(set_to_shoot_from):
+    """Randomly chooses a block from available to shoot from set
+    """
     pygame.time.delay(500)
     computer_fired_block = random.choice(tuple(set_to_shoot_from))
     computer_available_to_fire_set.discard(computer_fired_block)
@@ -375,6 +377,7 @@ def update_dotted_and_hit_sets(fired_block, computer_turn, diagonal_only=True):
                             fired_block[0]+i, y+j))
     dotted_set -= hit_blocks
 
+# ===========DRAWING SECTION==============
 
 def draw_ships(ships_coordinates_list):
     for elem in ships_coordinates_list:
