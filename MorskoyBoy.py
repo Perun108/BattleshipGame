@@ -31,6 +31,20 @@ destroyed_ships_list = []
 
 
 class Grid:
+    """Class to draw the grids and add title, numbers and letters to them
+    ----------
+    Attributes:
+        title (str): Players' name to be displayed on the top of his grid
+        offset (int): Where the grid starts (in number of blocks)
+                (typically 0 for computer and 15 for human)
+        available_blocks (set of tuples): coordinates of all blocks
+                that are avaiable for creating ships (updated every time a ship is created)
+        ships_set (set of tuples): all blocks that are occupied by ships
+        ships (list of lists): list of all individual ships (as lists)
+
+    ----------
+    Methods:
+    """
     def __init__(self, title, offset):
         self.title = title
         self.offset = offset
@@ -39,15 +53,20 @@ class Grid:
         self.add_nums_letters_to_grid()
 
     def draw_grid(self):
+        """Draws two grids for both players
+        """
         for i in range(11):
             # Horizontal lines
-            pygame.draw.line(screen, BLACK, (left_margin+self.offset, upper_margin+i*block_size),
-                             (left_margin+10*block_size+self.offset, upper_margin+i*block_size), 1)
+            pygame.draw.line(screen, BLACK, (left_margin+self.offset*block_size, upper_margin+i*block_size),
+                             (left_margin+(10+self.offset)*block_size, upper_margin+i*block_size), 1)
             # Vertical lines
-            pygame.draw.line(screen, BLACK, (left_margin+i*block_size+self.offset, upper_margin),
-                             (left_margin+i*block_size+self.offset, upper_margin+10*block_size), 1)
+            pygame.draw.line(screen, BLACK, (left_margin+(i+self.offset)*block_size, upper_margin),
+                             (left_margin+(i+self.offset)*block_size, upper_margin+10*block_size), 1)
 
     def add_nums_letters_to_grid(self):
+        """Draws numbers 1-10 along vertical and adds letters below horizontal
+        lines for both grids
+        """
         for i in range(10):
             num_ver = font.render(str(i+1), True, BLACK)
             letters_hor = font.render(LETTERS[i], True, BLACK)
@@ -56,17 +75,19 @@ class Grid:
             letters_hor_width = letters_hor.get_width()
 
             # Ver num grid1
-            screen.blit(num_ver, (left_margin - (block_size//2+num_ver_width//2)+self.offset,
+            screen.blit(num_ver, (left_margin - (block_size//2+num_ver_width//2)+self.offset*block_size,
                                   upper_margin + i*block_size + (block_size//2 - num_ver_height//2)))
             # Hor letters grid1
             screen.blit(letters_hor, (left_margin + i*block_size + (block_size //
-                                                                    2 - letters_hor_width//2)+self.offset, upper_margin + 10*block_size))
+                                                                    2 - letters_hor_width//2)+self.offset*block_size, upper_margin + 10*block_size))
 
     def sign_grid(self):
+        """Puts players' names (titles) in the center above the grids
+        """        
         player = font.render(self.title, True, BLACK)
         sign_width = player.get_width()
         screen.blit(player, (left_margin + 5*block_size - sign_width //
-                             2+self.offset, upper_margin - block_size//2 - font_size))
+                             2+self.offset*block_size, upper_margin - block_size//2 - font_size))
 
 
 class AutoShips:
@@ -469,7 +490,7 @@ def main():
 
     screen.fill(WHITE)
     computer_grid = Grid("COMPUTER", 0)
-    human_grid = Grid("HUMAN", 15*block_size)
+    human_grid = Grid("HUMAN", 15)
     # draw_ships(computer.ships)
     draw_ships(human.ships)
     pygame.display.update()
