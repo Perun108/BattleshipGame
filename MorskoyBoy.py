@@ -120,18 +120,55 @@ class AutoShips:
 
     """
     def __init__(self, offset):
+        """
+        Parameters:
+        offset (int): Where the grid starts (in number of blocks) 
+                (typically 0 for computer and 15 for human)
+        available_blocks (set of tuples): coordinates of all blocks 
+                that are avaiable for creating ships (updated every time a ship is created)
+        ships_set (set of tuples): all blocks that are occupied by ships
+        ships (list of lists): list of all individual ships (as lists)"""
+
         self.offset = offset
         self.available_blocks = {(x, y) for x in range(1+self.offset, 11+self.offset) for y in range(1, 11)}
         self.ships_set = set()
         self.ships = self.populate_grid()
 
     def create_start_block(self, available_blocks):
+        """
+        Randomly chooses a block from which to start creating a ship.
+        Randomly chooses horizontal or vertical type of a ship
+        Randomly chooses direction (from the start block) - straight or reverse
+
+        Args:
+            available_blocks (set of tuples): coordinates of all blocks 
+                that are avaiable for creating ships (updated every time a ship is created)
+
+        Returns:
+            int: x coordinate of a random block
+            int: y coordinate of a random block
+            int: 0=horizontal (change x), 1=vertical (change y)
+            int: 1=straight, -1=reverse
+        """
         x_or_y = random.randint(0, 1)
         str_rev = random.choice((-1, 1))
         x, y = random.choice(tuple(available_blocks))
         return x, y, x_or_y, str_rev
 
     def create_ship(self, number_of_blocks, available_blocks):
+        """Creates a ship of given length (number_of_blocks) starting from the start block
+                returned by the previous method, using type of ship and direction (changing it 
+                if going outside of grid) returned by previous method. 
+                Checks if the ship is valid (not adjacent to other ships and within the grid) 
+                and adds it to the list of ships.
+
+        Args:
+            number_of_blocks (int): length of a needed ship
+            available_blocks (set): free blocks for creating ships
+
+        Returns:
+            list: a list of tuples with a new ship's coordinates
+        """
         ship_coordinates = []
         x, y, x_or_y, str_rev = self.create_start_block(available_blocks)
         for _ in range(number_of_blocks):
@@ -147,6 +184,19 @@ class AutoShips:
         return self.create_ship(number_of_blocks, available_blocks)
 
     def get_new_block_for_ship(self, coor, str_rev, x_or_y, ship_coordinates):
+        """Checks if new individual blocks that are being added to a ship in the previous method 
+                are within the grid, otherwise changes the direction.
+
+        Args:
+            coor (int): x or y coordinate to increment/decrement
+            str_rev (int): 1 or -1
+            x_or_y (int): 0 or 1
+            ship_coordinates (list): coordinates of unfinished ship
+
+        Returns:
+            direction (int): straight or reverse
+            incremented/decremented coordinate of the last/first block in a ship under construction (int)
+        """
         if (coor <= 1-self.offset*(x_or_y-1) and str_rev == -1) or (coor >= 10-self.offset*(x_or_y-1) and str_rev == 1):
             str_rev *= -1
             return str_rev, ship_coordinates[0][x_or_y] + str_rev
@@ -154,10 +204,23 @@ class AutoShips:
             return str_rev, ship_coordinates[-1][x_or_y] + str_rev
 
     def is_ship_valid(self, new_ship):
+        """Check if all of a ship's coordinates are within the available blocks set.
+
+        Args:
+            new_ship (list): list of tuples with a newly created ship's coordinates
+
+        Returns:
+            bool: True or False
+        """
         ship = set(new_ship)
         return ship.issubset(self.available_blocks)
 
     def add_new_ship_to_set(self, new_ship):
+        """Adds all blocks in a ship's list to the ships_set
+
+        Args:
+            new_ship (list): list of tuples with a newly created ship's coordinates
+        """
         self.ships_set.update(new_ship)
 
     def update_available_blocks_for_creating_ships(self, new_ship):
