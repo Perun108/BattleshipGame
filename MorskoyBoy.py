@@ -328,6 +328,12 @@ def update_around_last_computer_hit(fired_block, computer_hits=True):
 
 
 def computer_first_hit(fired_block):
+    """Adds blocks above, below, to the right and to the left from the block hit 
+    by computer to a temporary set for computer to choose its next shot from.
+
+    Args:
+        fired_block (tuple): coordinates of a block hit by computer
+    """    
     xhit, yhit = fired_block
     if 16 < xhit:
         around_last_computer_hit_set.add((xhit-1, yhit))
@@ -340,6 +346,13 @@ def computer_first_hit(fired_block):
 
 
 def computer_hits_twice():
+    """Adds blocks before and after two or more blocks of a ship to a temporary list 
+    for computer to finish the ship faster.
+
+    Returns:
+        set: temporary set of blocks where potentially a human ship should be 
+        for computer to shoot from
+    """    
     last_hits_list.sort()
     new_around_last_hit_set = set()
     for i in range(len(last_hits_list)-1):
@@ -404,6 +417,11 @@ def add_missed_block_to_dotted_set(fired_block):
 # ===========DRAWING SECTION==============
 
 def draw_ships(ships_coordinates_list):
+    """Draws rectangles around the blocks that are occupied by a ship
+
+    Args:
+        ships_coordinates_list (list of tuples): a list of ships's coordinates
+    """    
     for elem in ships_coordinates_list:
         ship = sorted(elem)
         x_start = ship[0][0]
