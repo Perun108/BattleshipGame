@@ -70,6 +70,55 @@ class Grid:
 
 
 class AutoShips:
+    """Randomly create all player's ships on a grid
+    ----------
+    Attributes:
+        offset (int): Where the grid starts (in number of blocks) 
+                (typically 0 for computer and 15 for human)
+        available_blocks (set of tuples): coordinates of all blocks 
+                that are avaiable for creating ships (updated every time a ship is created)
+        ships_set (set of tuples): all blocks that are occupied by ships
+        ships (list of lists): list of all individual ships (as lists)
+
+    ----------
+    Methods:
+        create_start_block(available_blocks):
+            Randomly chooses a block from which to start creating a ship.
+            Randomly chooses horizontal or vertical type of a ship
+            Randomly chooses direction (from the start block) - straight or reverse
+            Returns three randomly chosen values
+
+        create_ship(number_of_blocks, available_blocks):
+            Creates a ship of given length (number_of_blocks) starting from the start block
+                returned by the previous method, using type of ship and direction (changing it 
+                if going outside of grid) returned by previous method. 
+                Checks if the ship is valid (not adjacent to other ships and within the grid) 
+                and adds it to the list of ships.
+            Returns: a list of tuples with a new ship's coordinates
+
+        get_new_block_for_ship(self, coor, str_rev, x_or_y, ship_coordinates):
+            Checks if new individual blocks that are being added to a ship in the previous method 
+                are within the grid, otherwise changes the direction.
+            Returns: 
+                direction (int): straight or reverse
+                incremented/decremented coordinate of the last/first block in a ship under construction
+
+        is_ship_valid(new_ship):
+            Check if all of a ship's coordinates are within the available blocks set.
+            Returns: True or False
+
+        add_new_ship_to_set(new_ship):
+            Adds all blocks in a ship's list to the ships_set
+
+        update_available_blocks_for_creating_ships(new_ship):
+            Removes all blocks occupied by a ship and around it from the available blocks set
+
+        populate_grid():
+            Creates needed number of each type of ships by calling the create_ship method.
+                Adds every ship to the ships list, ships_set and updates the available blocks.
+            Returns: the list of all ships
+
+    """
     def __init__(self, offset):
         self.offset = offset
         self.available_blocks = {(x, y) for x in range(1+self.offset, 11+self.offset) for y in range(1, 11)}
