@@ -37,20 +37,19 @@ class Grid:
         title (str): Players' name to be displayed on the top of his grid
         offset (int): Where the grid starts (in number of blocks)
                 (typically 0 for computer and 15 for human)
-        available_blocks (set of tuples): coordinates of all blocks
-                that are avaiable for creating ships (updated every time a ship is created)
-        ships_set (set of tuples): all blocks that are occupied by ships
-        ships (list of lists): list of all individual ships (as lists)
-
     ----------
     Methods:
+    draw_grid(): Draws two grids for both players
+    add_nums_letters_to_grid(): Draws numbers 1-10 along vertical and adds letters below horizontal
+        lines for both grids
+    sign_grid(): Puts players' names (titles) in the center above the grids
     """
     def __init__(self, title, offset):
         self.title = title
         self.offset = offset
         self.draw_grid()
-        self.sign_grid()
         self.add_nums_letters_to_grid()
+        self.sign_grid()
 
     def draw_grid(self):
         """Draws two grids for both players
