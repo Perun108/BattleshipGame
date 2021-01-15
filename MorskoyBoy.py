@@ -265,6 +265,11 @@ def computer_shoots(set_to_shoot_from):
 
 
 def check_hit_or_miss(fired_block, opponents_ships_list, computer_turn, opponents_ships_list_original_copy, opponents_ships_set):
+    """Checks whether the block that was shot at either by computer or by human is a hit or a miss.
+    Updates sets with dots (in missed blocks or in diagonal blocks around hit block) and 'X's
+    (in hit blocks).
+    Removes destroyed ships from the list of ships.
+    """
     for elem in opponents_ships_list:
         diagonal_only = True
         if fired_block in elem:
@@ -289,12 +294,6 @@ def check_hit_or_miss(fired_block, opponents_ships_list, computer_turn, opponent
     if computer_turn:
         update_around_last_computer_hit(fired_block, False)
     return False
-
-
-def add_missed_block_to_dotted_set(fired_block):
-    dotted_set.add(fired_block)
-    dotted_set_for_computer_not_to_shoot.add(fired_block)
-
 
 def update_destroyed_ships(ind, computer_turn, opponents_ships_list_original_copy):
     ship = sorted(opponents_ships_list_original_copy[ind])
@@ -376,6 +375,18 @@ def update_dotted_and_hit_sets(fired_block, computer_turn, diagonal_only=True):
                         dotted_set_for_computer_not_to_shoot.add((
                             fired_block[0]+i, y+j))
     dotted_set -= hit_blocks
+
+
+def add_missed_block_to_dotted_set(fired_block):
+    """Adds a block to the set of missed shots or of those blocks that are on a diagonal line
+    from the fired block or all-around destroyed ship. Needed for computer to remove these dotted
+    blocks from the set of available blocks for it to shoot from. Not really needed for a human player.
+    
+    dotted_set: set of all blocks (tuples) that are marked by a dot on both grids (x: 1-10 and 16-25).
+    """
+    dotted_set.add(fired_block)
+    dotted_set_for_computer_not_to_shoot.add(fired_block)
+
 
 # ===========DRAWING SECTION==============
 
