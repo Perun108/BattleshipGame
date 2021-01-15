@@ -27,7 +27,7 @@ dotted_set = set()
 dotted_set_for_computer_not_to_shoot = set()
 hit_blocks_for_computer_not_to_shoot = set()
 last_hits_list = []
-destroyed_ships_list = []
+destroyed_computer_ships = []
 
 
 class Grid:
@@ -73,10 +73,10 @@ class Grid:
             num_ver_height = num_ver.get_height()
             letters_hor_width = letters_hor.get_width()
 
-            # Ver num grid1
+            # Numbers (vertical)
             screen.blit(num_ver, (left_margin - (block_size//2+num_ver_width//2)+self.offset*block_size,
                                   upper_margin + i*block_size + (block_size//2 - num_ver_height//2)))
-            # Hor letters grid1
+            # Letters (horizontal)
             screen.blit(letters_hor, (left_margin + i*block_size + (block_size //
                                                                     2 - letters_hor_width//2)+self.offset*block_size, upper_margin + 10*block_size))
 
@@ -139,6 +139,7 @@ class AutoShips:
             Returns: the list of all ships
 
     """
+
     def __init__(self, offset):
         """
         Parameters:
@@ -171,6 +172,7 @@ class AutoShips:
             int: 1=straight, -1=reverse
         """
         x_or_y = random.randint(0, 1)
+        # -1 is left or down, 1 is right or up
         str_rev = random.choice((-1, 1))
         x, y = random.choice(tuple(available_blocks))
         return x, y, x_or_y, str_rev
@@ -308,12 +310,13 @@ def check_hit_or_miss(fired_block, opponents_ships_list, computer_turn, opponent
                     last_hits_list.clear()
                     around_last_computer_hit_set.clear()
                 else:
-                    destroyed_ships_list.append(computer.ships[ind])
+                    destroyed_computer_ships.append(computer.ships[ind])
             return True
     add_missed_block_to_dotted_set(fired_block)
     if computer_turn:
         update_around_last_computer_hit(fired_block, False)
     return False
+
 
 def update_destroyed_ships(ind, computer_turn, opponents_ships_list_original_copy):
     """Draws dots around and 'X's within a destroyed ship.
@@ -334,10 +337,8 @@ def update_around_last_computer_hit(fired_block, computer_hits=True):
     global around_last_computer_hit_set, computer_available_to_fire_set
     if computer_hits and fired_block in around_last_computer_hit_set:
         around_last_computer_hit_set = computer_hits_twice()
-    
     elif computer_hits and fired_block not in around_last_computer_hit_set:
         computer_first_hit(fired_block)
-   
     elif not computer_hits:
         around_last_computer_hit_set.discard(fired_block)
    
@@ -355,11 +356,11 @@ def computer_first_hit(fired_block):
         fired_block (tuple): coordinates of a block hit by computer
     """    
     xhit, yhit = fired_block
-    if 16 < xhit:
+    if xhit > 16:
         around_last_computer_hit_set.add((xhit-1, yhit))
     if xhit < 25:
         around_last_computer_hit_set.add((xhit+1, yhit))
-    if 1 < yhit:
+    if yhit > 1:
         around_last_computer_hit_set.add((xhit, yhit-1))
     if yhit < 10:
         around_last_computer_hit_set.add((xhit, yhit+1))
@@ -386,7 +387,7 @@ def computer_hits_twice():
             if y2 < 10:
                 new_around_last_hit_set.add((x1, y2 + 1))
         elif y1 == y2:
-            if 16 < x1:
+            if x1 > 16:
                 new_around_last_hit_set.add((x1 - 1, y1))
             if x2 < 25:
                 new_around_last_hit_set.add((x2 + 1, y1))
@@ -404,22 +405,24 @@ def update_dotted_and_hit_sets(fired_block, computer_turn, diagonal_only=True):
     if computer_turn:
         a += 15
         b += 15
+        # Adds a block hit by computer to the set of his hits to later remove
+        # them from the set of blocks available for it to shoot from
         hit_blocks_for_computer_not_to_shoot.add(fired_block)
+    # Adds hit blocks on either grid1 (x:1-10) or grid2 (x:16-25)
     hit_blocks.add(fired_block)
+    # Adds blocks in diagonal or all-around a block to repsective sets
     for i in range(-1, 2):
         for j in range(-1, 2):
             if diagonal_only:
                 if i != 0 and j != 0 and a < x + i < b and 0 < y + j < 11:
                     dotted_set.add((x+i, y+j))
                     if computer_turn:
-                        dotted_set_for_computer_not_to_shoot.add(
-                            (fired_block[0]+i, y+j))
+                        dotted_set_for_computer_not_to_shoot.add((x+i, y+j))
             else:
                 if a < x + i < b and 0 < y + j < 11:
                     dotted_set.add((x+i, y+j))
                     if computer_turn:
-                        dotted_set_for_computer_not_to_shoot.add((
-                            fired_block[0]+i, y+j))
+                        dotted_set_for_computer_not_to_shoot.add((x+i, y+j))
     dotted_set -= hit_blocks
 
 
@@ -456,6 +459,7 @@ def draw_ships(ships_coordinates_list):
         y = block_size * (y_start - 1) + upper_margin
         pygame.draw.rect(
             screen, BLACK, ((x, y), (ship_width, ship_height)), width=block_size//10)
+
 
 def draw_from_dotted_set(dotted_set):
     """Draws dots in the center of all blocks in the dotted_set
@@ -500,10 +504,12 @@ def main():
                 game_over = True
             elif not computer_turn and event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = event.pos
-                if (left_margin <= x <= left_margin + 10*block_size) and (upper_margin <= y <= upper_margin + 10*block_size):
+                # There should be stict '<' and not <=! Oterwise we will shoot at grid's lines 
+                # and the dot will be put outside of the grid!
+                if (left_margin < x < left_margin + 10*block_size) and (upper_margin < y < upper_margin + 10*block_size):
                     fired_block = ((x - left_margin) // block_size + 1,
                                    (y - upper_margin) // block_size + 1)
-                computer_turn = not check_hit_or_miss(fired_block, computer_ships_working, False, computer.ships, computer.ships_set)
+                    computer_turn = not check_hit_or_miss(fired_block, computer_ships_working, False, computer.ships, computer.ships_set)
 
         if computer_turn:
             set_to_shoot_from = computer_available_to_fire_set
@@ -515,7 +521,7 @@ def main():
 
         draw_from_dotted_set(dotted_set)
         draw_hit_blocks(hit_blocks)
-        draw_ships(destroyed_ships_list)
+        draw_ships(destroyed_computer_ships)
         pygame.display.update()
 
 
