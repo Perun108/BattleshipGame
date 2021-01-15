@@ -420,12 +420,16 @@ def draw_ships(ships_coordinates_list):
             screen, BLACK, ((x, y), (ship_width, ship_height)), width=block_size//10)
 
 def draw_from_dotted_set(dotted_set):
+    """Draws dots in the center of all blocks in the dotted_set
+    """
     for elem in dotted_set:
         pygame.draw.circle(screen, BLACK, (block_size*(
             elem[0]-0.5)+left_margin, block_size*(elem[1]-0.5)+upper_margin), block_size//6)
 
 
 def draw_hit_blocks(hit_blocks):
+    """Draws 'X' in the blocks that were successfully hit either by computer or by human
+    """
     for block in hit_blocks:
         x1 = block_size * (block[0]-1) + left_margin
         y1 = block_size * (block[1]-1) + upper_margin
