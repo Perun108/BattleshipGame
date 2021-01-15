@@ -253,23 +253,7 @@ class AutoShips:
         return ships_coordinates_list
 
 
-def draw_ships(ships_coordinates_list):
-    for elem in ships_coordinates_list:
-        ship = sorted(elem)
-        x_start = ship[0][0]
-        y_start = ship[0][1]
-        # Horizontal and 1block ships
-        ship_width = block_size * len(ship)
-        ship_height = block_size
-        # Vertical ships
-        if len(ship) > 1 and ship[0][0] == ship[1][0]:
-            ship_width, ship_height = ship_height, ship_width
-        x = block_size * (x_start - 1) + left_margin
-        y = block_size * (y_start - 1) + upper_margin
-        pygame.draw.rect(
-            screen, BLACK, ((x, y), (ship_width, ship_height)), width=block_size//10)
-
-
+# ===========Shooting section==============
 
 def computer_shoots(set_to_shoot_from):
     pygame.time.delay(500)
@@ -391,6 +375,22 @@ def update_dotted_and_hit_sets(fired_block, computer_turn, diagonal_only=True):
                             fired_block[0]+i, y+j))
     dotted_set -= hit_blocks
 
+
+def draw_ships(ships_coordinates_list):
+    for elem in ships_coordinates_list:
+        ship = sorted(elem)
+        x_start = ship[0][0]
+        y_start = ship[0][1]
+        # Horizontal and 1block ships
+        ship_width = block_size * len(ship)
+        ship_height = block_size
+        # Vertical ships
+        if len(ship) > 1 and ship[0][0] == ship[1][0]:
+            ship_width, ship_height = ship_height, ship_width
+        x = block_size * (x_start - 1) + left_margin
+        y = block_size * (y_start - 1) + upper_margin
+        pygame.draw.rect(
+            screen, BLACK, ((x, y), (ship_width, ship_height)), width=block_size//10)
 
 def draw_from_dotted_set(dotted_set):
     for elem in dotted_set:
