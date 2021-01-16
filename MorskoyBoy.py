@@ -427,11 +427,8 @@ def update_dotted_and_hit_sets(fired_block, computer_turn, diagonal_only=True):
 
 
 def add_missed_block_to_dotted_set(fired_block):
-    """Adds a block to the set of missed shots or of those blocks that are on a diagonal line
-    from the fired block or all-around destroyed ship. Needed for computer to remove these dotted
-    blocks from the set of available blocks for it to shoot from. Not really needed for a human player.
-    
-    dotted_set: set of all blocks (tuples) that are marked by a dot on both grids (x: 1-10 and 16-25).
+    """Adds a fired_block to the set of missed shots (if fired_block is a miss then) to then draw dots on them.
+    Also needed for computer to remove these dotted blocks from the set of available blocks for it to shoot from.
     """
     dotted_set.add(fired_block)
     dotted_set_for_computer_not_to_shoot.add(fired_block)
