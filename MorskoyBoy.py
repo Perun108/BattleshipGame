@@ -295,11 +295,14 @@ def check_hit_or_miss(fired_block, opponents_ships_list, computer_turn, opponent
     for elem in opponents_ships_list:
         diagonal_only = True
         if fired_block in elem:
+            # This is to put dots before and after a destroyed ship
+            # and to draw computer's destroyed ships (which are hidden until destroyed)
             ind = opponents_ships_list.index(elem)
             if len(elem) == 1:
                 diagonal_only = False
             update_dotted_and_hit_sets(fired_block, computer_turn, diagonal_only)
             elem.remove(fired_block)
+            # This is to check who loses - if ships_set is empty
             opponents_ships_set.discard(fired_block)
             if computer_turn:
                 last_hits_list.append(fired_block)
