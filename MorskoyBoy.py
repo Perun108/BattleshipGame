@@ -20,7 +20,7 @@ pygame.display.set_caption("Morskoy Boy")
 font_size = int(block_size / 1.5)
 
 font = pygame.font.SysFont('notosans', font_size)
-computer_available_to_fire_set = {(x, y) for x in range(16, 25) for y in range(1, 11)}
+computer_available_to_fire_set = {(x, y) for x in range(16, 26) for y in range(1, 11)}
 around_last_computer_hit_set = set()
 hit_blocks = set()
 dotted_set = set()
@@ -404,28 +404,18 @@ def update_dotted_and_hit_sets(fired_block, computer_turn, diagonal_only=True):
     """
     global dotted_set
     x, y = fired_block
-    a, b = 0, 11
-    if computer_turn:
-        a += 15
-        b += 15
-        # Adds a block hit by computer to the set of his hits to later remove
-        # them from the set of blocks available for it to shoot from
-        hit_blocks_for_computer_not_to_shoot.add(fired_block)
+    a = 0 + 15*computer_turn
+    b = 11 + 15*computer_turn
+    # Adds a block hit by computer to the set of his hits to later remove
+    # them from the set of blocks available for it to shoot from
+    hit_blocks_for_computer_not_to_shoot.add(fired_block)
     # Adds hit blocks on either grid1 (x:1-10) or grid2 (x:16-25)
     hit_blocks.add(fired_block)
     # Adds blocks in diagonal or all-around a block to repsective sets
     for i in range(-1, 2):
         for j in range(-1, 2):
-            if diagonal_only:
-                if i != 0 and j != 0 and a < x + i < b and 0 < y + j < 11:
-                    dotted_set.add((x+i, y+j))
-                    if computer_turn:
-                        dotted_set_for_computer_not_to_shoot.add((x+i, y+j))
-            else:
-                if a < x + i < b and 0 < y + j < 11:
-                    dotted_set.add((x+i, y+j))
-                    if computer_turn:
-                        dotted_set_for_computer_not_to_shoot.add((x+i, y+j))
+            if (not diagonal_only or i != 0 and j != 0) and a < x + i < b and 0 < y + j < 11:
+                add_missed_block_to_dotted_set((x+i, y+j))
     dotted_set -= hit_blocks
 
 
