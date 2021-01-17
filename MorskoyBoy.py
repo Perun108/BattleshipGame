@@ -307,12 +307,14 @@ def check_hit_or_miss(fired_block, opponents_ships_list, computer_turn, opponent
             if computer_turn:
                 last_hits_list.append(fired_block)
                 update_around_last_computer_hit(fired_block, True)
+            # If the ship is destroyed
             if not elem:
                 update_destroyed_ships(ind, computer_turn, opponents_ships_list_original_copy)
                 if computer_turn:
                     last_hits_list.clear()
                     around_last_computer_hit_set.clear()
                 else:
+                    # Add computer's destroyed ship to the list to draw it (computer ships are hidden)
                     destroyed_computer_ships.append(computer.ships[ind])
             return True
     add_missed_block_to_dotted_set(fired_block)
