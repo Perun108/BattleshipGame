@@ -306,7 +306,7 @@ def check_hit_or_miss(fired_block, opponents_ships_list, computer_turn, opponent
             opponents_ships_set.discard(fired_block)
             if computer_turn:
                 last_hits_list.append(fired_block)
-                update_around_last_computer_hit(fired_block)
+                update_around_last_computer_hit(fired_block, True)
             if not elem:
                 update_destroyed_ships(ind, computer_turn, opponents_ships_list_original_copy)
                 if computer_turn:
@@ -330,7 +330,7 @@ def update_destroyed_ships(ind, computer_turn, opponents_ships_list_original_cop
         update_dotted_and_hit_sets(ship[i], computer_turn, False)
 
 
-def update_around_last_computer_hit(fired_block, computer_hits=True):
+def update_around_last_computer_hit(fired_block, computer_hits):
     """Updates around_last_computer_hit_set (which is used to choose for computer to fire from) if it
     hit the ship but not destroyed it). Adds to this set vertical or horizontal blocks around the
     block that was last hit. Then removes those block from that set which were shot at but missed.
