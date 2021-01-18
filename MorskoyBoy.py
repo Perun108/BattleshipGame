@@ -45,6 +45,10 @@ class Grid:
     sign_grid(): Puts players' names (titles) in the center above the grids
     """
     def __init__(self, title, offset):
+        """title(str): Players' name to be displayed on the top of his grid
+        offset (int): Where the grid starts (in number of blocks)
+        (typically 0 for computer and 15 for human)
+        """
         self.title = title
         self.offset = offset
         self.draw_grid()
