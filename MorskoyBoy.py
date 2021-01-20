@@ -410,7 +410,7 @@ def update_dotted_and_hit_sets(fired_block, computer_turn, diagonal_only=True):
     """
     global dotted_set
     x, y = fired_block
-    a = 0 + 15*computer_turn
+    a = 15*computer_turn
     b = 11 + 15*computer_turn
     # Adds a block hit by computer to the set of his hits to later remove
     # them from the set of blocks available for it to shoot from
