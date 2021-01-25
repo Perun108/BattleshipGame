@@ -2,29 +2,39 @@ import pygame
 import random
 import copy
 
-#WHITE = (255, 255, 255)
-# TODO Rename this variabe to LIGHT_GRAY and refactor all references!
-WHITE = (192, 192, 192)
+WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
+LIGHT_GRAY = (192, 192, 192)
+GREEN_BLUE = (0, 153, 153)
+INK = (39, 64, 139)
+VIOLET = (6, 10, 88)
 
 block_size = 50
 left_margin = 5*block_size
 upper_margin = 2*block_size
 # 30 = 2x10 blocks width in two grids + hard-coded 5*blocks gap after each grid!
 size = (left_margin+30*block_size, upper_margin+15*block_size)
-LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
+# LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
+LETTERS = "АБВГДЕЖЗИК"
 
 pygame.init()
-clock = pygame.time.Clock()
+# clock = pygame.time.Clock()
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Morskoy Boy")
 # This ratio is purely for scaling the font according to the block size
 font_size = int(block_size / 1.5)
 font = pygame.font.SysFont('notosans', font_size)
-notif_font_size = 3*block_size
-notif_font = pygame.font.SysFont('notosans', notif_font_size)
+game_over_font_size = 3*block_size
+game_over_font = pygame.font.SysFont('notosans', game_over_font_size)
 
+### COMPUTER DATA ###
+computer_available_to_fire_set = {(a, b)
+                                  for a in range(16, 26) for b in range(1, 11)}
+around_last_computer_hit_set = set()
+dotted_set_for_computer_not_to_shoot = set()
+hit_blocks_for_computer_not_to_shoot = set()
+last_hits_list = []
 ############
 
 hit_blocks = set()
@@ -92,7 +102,7 @@ class Grid:
 
 
 class Button:
-    def __init__(self, text, message, x_offset, color=(100, 100, 100)):
+    def __init__(self, text, message, x_offset):
         self.text = text
         self.text_width, self.text_height = font.size(self.text)
         self.message = message
@@ -104,19 +114,28 @@ class Button:
         self.y_start = upper_margin + 10 * block_size + self.button_height
 
         self.rect_for_draw = self.x_start, self.y_start, self.button_width, self.button_height
-        self.rect_for_button_text = self.x_start + self.button_width//2 - \
-            self.text_width // 2, self.y_start + self.button_height//2 - self.text_height//2
+        self.rect = pygame.Rect(self.rect_for_draw)
+        self.rect_for_button_text = self.x_start + self.button_width / 2 - \
+            self.text_width / 2, self.y_start + self.button_height / 2 - self.text_height / 2
         self.message_width, self.message_height = font.size(self.message)
-        self.rect_for_message = self.x_start//2 - self.message_width//2, self.y_start + \
-            self.button_height//2 - self.message_height//2
-        self.color = color
+        self.rect_for_message = self.x_start / 2 - self.message_width / 2, self.y_start + \
+            self.button_height / 2 - self.message_height / 2
+        self.color = BLACK
 
     def draw_button(self, color=None):
+        # Default color will be BLACK as in class constructor
+        # but we need to also change it when a button is hovered over or disabled
         if not color:
             color = self.color
         pygame.draw.rect(screen, color, self.rect_for_draw)
-        text_to_blit = font.render(self.text, True, BLACK)
+        text_to_blit = font.render(self.text, True, WHITE)
         screen.blit(text_to_blit, self.rect_for_button_text)
+
+    def change_color_on_hover(self):
+        # Changing color of the button while hovering over with a mouse
+        mouse = pygame.mouse.get_pos()
+        if self.rect.collidepoint(mouse):
+            self.draw_button(GREEN_BLUE)
 
     def print_message_for_button(self):
         text = font.render(self.message, True, BLACK)
@@ -188,7 +207,6 @@ class AutoShips:
         self.available_blocks = {(x, y) for x in range(1+self.offset, 11+self.offset) for y in range(1, 11)}
         self.ships_set = set()
         self.ships = self.populate_grid()
-        self.ships_list_to_remove_hits = copy.deepcopy(self.ships)
 
     def create_start_block(self, available_blocks):
         """
@@ -310,136 +328,15 @@ class AutoShips:
         return ships_coordinates_list
 
 
-# ===========COMPUTER section==============
+# ===========Shooting section==============
 
-### COMPUTER DATA ###
+def computer_shoots(set_to_shoot_from):
+    """Randomly chooses a block from available to shoot from set
+    """
+    computer_fired_block = random.choice(tuple(set_to_shoot_from))
+    computer_available_to_fire_set.discard(computer_fired_block)
+    return computer_fired_block
 
-class Computer:
-    def __init__(self):
-        self.computer_available_to_fire_set = {(x, y) for x in range(16, 26) for y in range(1, 11)}
-        self.around_last_computer_hit_set = set()
-        self.dotted_set_for_computer_not_to_shoot = set()
-        self.hit_blocks_for_computer_not_to_shoot = set()
-        self.last_hits_list = []
-        self.opponents_ships_list_to_remove = human.
-        opponents_ships_list_original_copy
-        opponents_ships_set
-
-    def computer_shoots(self):
-        """Randomly chooses a block from available to shoot from set
-        """
-        set_to_shoot_from = self.computer_available_to_fire_set if not self.around_last_computer_hit_set else self.around_last_computer_hit_set
-        computer_fired_block = random.choice(tuple(set_to_shoot_from))
-        self.computer_available_to_fire_set.discard(computer_fired_block)
-        return self.check_hit_or_miss(computer_fired_block)
-
-    def check_hit_or_miss(fired_block):
-        # if computer_turn:
-        #    pygame.time.delay(500)
-        """Checks whether the block that was shot at either by computer or by human is a hit or a miss.
-        Updates sets with dots (in missed blocks or in diagonal blocks around hit block) and 'X's
-        (in hit blocks).
-        Removes destroyed ships from the list of ships.
-        """
-        for elem in opponents_ships_list:
-            diagonal_only = True
-            if fired_block in elem:
-                ind = opponents_ships_list.index(elem)
-                if len(elem) == 1:
-                    diagonal_only = False
-                update_dotted_and_hit_sets(
-                    fired_block, computer_turn, diagonal_only)
-                elem.remove(fired_block)
-                opponents_ships_set.discard(fired_block)
-                if computer_turn:
-                    last_hits_list.append(fired_block)
-                    update_around_last_computer_hit(fired_block)
-                if not elem:
-                    update_destroyed_ships(
-                        ind, computer_turn, opponents_ships_list_original_copy)
-                    if computer_turn:
-                        last_hits_list.clear()
-                        around_last_computer_hit_set.clear()
-                    else:
-                        destroyed_computer_ships.append(computer.ships[ind])
-                return True
-        add_missed_block_to_dotted_set(fired_block)
-        if computer_turn:
-            update_around_last_computer_hit(fired_block, False)
-        return False
-
-
-    def update_around_last_computer_hit(self, fired_block, computer_hits):
-        """Updates around_last_computer_hit_set (which is used to choose for computer to fire from) if it
-        hit the ship but not destroyed it). Adds to this set vertical or horizontal blocks around the
-        block that was last hit. Then removes those block from that set which were shot at but missed.
-        around_last_computer_hit_set makes computer choose the right blocks to quickly destroy the ship
-        instead of just randomly shooting at completely random blocks.
-        """
-        if computer_hits and fired_block in self.around_last_computer_hit_set:
-            self.around_last_computer_hit_set = self.computer_hits_twice()
-        elif computer_hits and fired_block not in self.around_last_computer_hit_set:
-            self.computer_first_hit(fired_block)
-        elif not computer_hits:
-            self.around_last_computer_hit_set.discard(fired_block)
-
-        self.around_last_computer_hit_set -= self.dotted_set_for_computer_not_to_shoot
-        self.around_last_computer_hit_set -= self.hit_blocks_for_computer_not_to_shoot
-        self.computer_available_to_fire_set -= self.around_last_computer_hit_set
-        self.computer_available_to_fire_set -= self.dotted_set_for_computer_not_to_shoot
-
-
-    def computer_first_hit(self, fired_block):
-        """Adds blocks above, below, to the right and to the left from the block hit 
-        by computer to a temporary set for computer to choose its next shot from.
-
-        Args:
-            fired_block (tuple): coordinates of a block hit by computer
-        """
-        xhit, yhit = fired_block
-        if xhit > 16:
-            self.around_last_computer_hit_set.add((xhit-1, yhit))
-        if xhit < 25:
-            self.around_last_computer_hit_set.add((xhit+1, yhit))
-        if yhit > 1:
-            self.around_last_computer_hit_set.add((xhit, yhit-1))
-        if yhit < 10:
-            self.around_last_computer_hit_set.add((xhit, yhit+1))
-
-
-    def computer_hits_twice(self):
-        """Adds blocks before and after two or more blocks of a ship to a temporary list 
-        for computer to finish the ship faster.
-
-        Returns:
-            set: temporary set of blocks where potentially a human ship should be 
-            for computer to shoot from
-        """
-        self.last_hits_list.sort()
-        new_around_last_hit_set = set()
-        for i in range(len(self.last_hits_list)-1):
-            x1 = self.last_hits_list[i][0]
-            x2 = self.last_hits_list[i+1][0]
-            y1 = self.last_hits_list[i][1]
-            y2 = self.last_hits_list[i+1][1]
-            if x1 == x2:
-                if y1 > 1:
-                    new_around_last_hit_set.add((x1, y1 - 1))
-                if y2 < 10:
-                    new_around_last_hit_set.add((x1, y2 + 1))
-            elif y1 == y2:
-                if x1 > 16:
-                    new_around_last_hit_set.add((x1 - 1, y1))
-                if x2 < 25:
-                    new_around_last_hit_set.add((x2 + 1, y1))
-        return new_around_last_hit_set
-
-
-#============GAME SECTION (GENERAL - COMMON TO BOTH PLAYERS)
-
-class Player:
-    def __init__(self, fired_block, diagonal_only, dotted_set, hit_blocks):
-        pass
 
 def check_hit_or_miss(fired_block, opponents_ships_list, computer_turn, opponents_ships_list_original_copy, opponents_ships_set):
     # if computer_turn:
@@ -455,16 +352,14 @@ def check_hit_or_miss(fired_block, opponents_ships_list, computer_turn, opponent
             ind = opponents_ships_list.index(elem)
             if len(elem) == 1:
                 diagonal_only = False
-            update_dotted_and_hit_sets(
-                fired_block, computer_turn, diagonal_only)
+            update_dotted_and_hit_sets(fired_block, computer_turn, diagonal_only)
             elem.remove(fired_block)
             opponents_ships_set.discard(fired_block)
             if computer_turn:
                 last_hits_list.append(fired_block)
                 update_around_last_computer_hit(fired_block)
             if not elem:
-                update_destroyed_ships(
-                    ind, computer_turn, opponents_ships_list_original_copy)
+                update_destroyed_ships(ind, computer_turn, opponents_ships_list_original_copy)
                 if computer_turn:
                     last_hits_list.clear()
                     around_last_computer_hit_set.clear()
@@ -478,12 +373,79 @@ def check_hit_or_miss(fired_block, opponents_ships_list, computer_turn, opponent
 
 
 def update_destroyed_ships(ind, computer_turn, opponents_ships_list_original_copy):
-    """Adds blocks before and after a ship to dotted_set to draw dots on them. 
-    Adds all blocks in a ship to hit_blocks set to draw 'X's within a destroyed ship.
+    """Draws dots around and 'X's within a destroyed ship.
+    Draws rectangle around destroyed computer ships on grid1 (that were not visible before destruction)
     """
     ship = sorted(opponents_ships_list_original_copy[ind])
     for i in range(-1, 1):
         update_dotted_and_hit_sets(ship[i], computer_turn, False)
+
+
+def update_around_last_computer_hit(fired_block, computer_hits=True):
+    """Updates around_last_computer_hit_set (which is used to choose for computer to fire from) if it
+    hit the ship but not destroyed it). Adds to this set vertical or horizontal blocks around the
+    block that was last hit. Then removes those block from that set which were shot at but missed.
+    around_last_computer_hit_set makes computer choose the right blocks to quickly destroy the ship
+    instead of just randomly shooting at completely random blocks.
+    """
+    global around_last_computer_hit_set, computer_available_to_fire_set
+    if computer_hits and fired_block in around_last_computer_hit_set:
+        around_last_computer_hit_set = computer_hits_twice()
+    elif computer_hits and fired_block not in around_last_computer_hit_set:
+        computer_first_hit(fired_block)
+    elif not computer_hits:
+        around_last_computer_hit_set.discard(fired_block)
+
+    around_last_computer_hit_set -= dotted_set_for_computer_not_to_shoot
+    around_last_computer_hit_set -= hit_blocks_for_computer_not_to_shoot
+    computer_available_to_fire_set -= around_last_computer_hit_set
+    computer_available_to_fire_set -= dotted_set_for_computer_not_to_shoot
+
+
+def computer_first_hit(fired_block):
+    """Adds blocks above, below, to the right and to the left from the block hit 
+    by computer to a temporary set for computer to choose its next shot from.
+
+    Args:
+        fired_block (tuple): coordinates of a block hit by computer
+    """
+    xhit, yhit = fired_block
+    if xhit > 16:
+        around_last_computer_hit_set.add((xhit-1, yhit))
+    if xhit < 25:
+        around_last_computer_hit_set.add((xhit+1, yhit))
+    if yhit > 1:
+        around_last_computer_hit_set.add((xhit, yhit-1))
+    if yhit < 10:
+        around_last_computer_hit_set.add((xhit, yhit+1))
+
+
+def computer_hits_twice():
+    """Adds blocks before and after two or more blocks of a ship to a temporary list 
+    for computer to finish the ship faster.
+
+    Returns:
+        set: temporary set of blocks where potentially a human ship should be 
+        for computer to shoot from
+    """
+    last_hits_list.sort()
+    new_around_last_hit_set = set()
+    for i in range(len(last_hits_list)-1):
+        x1 = last_hits_list[i][0]
+        x2 = last_hits_list[i+1][0]
+        y1 = last_hits_list[i][1]
+        y2 = last_hits_list[i+1][1]
+        if x1 == x2:
+            if y1 > 1:
+                new_around_last_hit_set.add((x1, y1 - 1))
+            if y2 < 10:
+                new_around_last_hit_set.add((x1, y2 + 1))
+        elif y1 == y2:
+            if x1 > 16:
+                new_around_last_hit_set.add((x1 - 1, y1))
+            if x2 < 25:
+                new_around_last_hit_set.add((x2 + 1, y1))
+    return new_around_last_hit_set
 
 
 def update_dotted_and_hit_sets(fired_block, computer_turn, diagonal_only=True):
@@ -493,18 +455,28 @@ def update_dotted_and_hit_sets(fired_block, computer_turn, diagonal_only=True):
     """
     global dotted_set
     x, y = fired_block
-    a = 0 + 15*computer_turn
-    b = 11 + 15*computer_turn
-    # Adds a block hit by computer to the set of his hits to later remove
-    # them from the set of blocks available for it to shoot from
-    hit_blocks_for_computer_not_to_shoot.add(fired_block)
+    a, b = 0, 11
+    if computer_turn:
+        a += 15
+        b += 15
+        # Adds a block hit by computer to the set of his hits to later remove
+        # them from the set of blocks available for it to shoot from
+        hit_blocks_for_computer_not_to_shoot.add(fired_block)
     # Adds hit blocks on either grid1 (x:1-10) or grid2 (x:16-25)
     hit_blocks.add(fired_block)
     # Adds blocks in diagonal or all-around a block to repsective sets
     for i in range(-1, 2):
         for j in range(-1, 2):
-            if (not diagonal_only or i != 0 and j != 0) and a < x + i < b and 0 < y + j < 11:
-                add_missed_block_to_dotted_set((x+i, y+j))
+            if diagonal_only:
+                if i != 0 and j != 0 and a < x + i < b and 0 < y + j < 11:
+                    dotted_set.add((x+i, y+j))
+                    if computer_turn:
+                        dotted_set_for_computer_not_to_shoot.add((x+i, y+j))
+            else:
+                if a < x + i < b and 0 < y + j < 11:
+                    dotted_set.add((x+i, y+j))
+                    if computer_turn:
+                        dotted_set_for_computer_not_to_shoot.add((x+i, y+j))
     dotted_set -= hit_blocks
 
 
@@ -563,7 +535,7 @@ def draw_hit_blocks(hit_blocks):
                          (x1+block_size, y1), block_size//6)
 
 
-def show_messages_at_center(text, rect, which_font=font, color=RED):
+def show_messages_at_rect_center(text, rect, which_font=font, color=RED):
     """Blits (prints) given message to the screen at the center of a given rectangle
 
     Args:
@@ -620,48 +592,44 @@ def restore_used_blocks(deleted_ship, used_blocks_set):
                 used_blocks_set.discard((block[0]+i, block[1]+j))
     return used_blocks_set
 
-class ManualShips:
-    def __init__(self, ships_list):
-        self.ships_list = ships_list
-        self.ships_set = {elem for ship in ships_list for elem in ship}
-        self.ships_list_to_remove_hits = copy.deepcopy(ships_list)
-
 
 computer = AutoShips(0)
+computer_ships_working = copy.deepcopy(computer.ships)
 
 message_one = "How do you want to create your ships? Click the button"
 undo_message = "To undo the last ship click the button"
 auto_button_place = left_margin + 17*block_size
-manual_button_place = left_margin + 21 * block_size
+manual_button_place = left_margin + 20*block_size
 undo_button_place = left_margin + 12*block_size
 
 auto_button = Button("AUTO", message_one, auto_button_place)
-auto_button_rect = pygame.Rect(auto_button.rect_for_draw)
 manual_button = Button("MANUAL", message_one, manual_button_place)
-manual_button_rect = pygame.Rect(manual_button.rect_for_draw)
 undo_button = Button("UNDO LAST SHIP", undo_message, undo_button_place)
-undo_button_rect = pygame.Rect(undo_button.rect_for_draw)
-
-rect_for_grids = (0, 0, size[0], upper_margin+12*block_size)
-rect_for_message_and_buttons = (
-    0, upper_margin+11*block_size, size[0], 5*block_size)
-message_rect_drawing_ships = (undo_button.rect_for_draw[0]+undo_button.rect_for_draw[2], upper_margin+11*block_size, size[0]-(
-    undo_button.rect_for_draw[0]+undo_button.rect_for_draw[2]), 4*block_size)
-message_rect_computer = (left_margin-2*block_size,
-                         upper_margin+11*block_size, 14*block_size, 4*block_size)
-message_rect_human = (left_margin+15*block_size,
-                      upper_margin+11*block_size, 10*block_size, 4*block_size)
+#auto_button_rect = pygame.Rect(auto_button.rect_for_draw)
+#manual_button_rect = pygame.Rect(manual_button.rect_for_draw)
+#undo_button_rect = pygame.Rect(undo_button.rect_for_draw)
 
 
 def main():
-    start = (0, 0)
-    ship_size = (0, 0)
-    last_rect = ((0, 0), (0, 0))
+    # last_rect = ((0, 0), (0, 0))
     ships_creation_not_settled = True
     ships_not_created = True
+    drawing = False
     game_over = False
     computer_turn = False
-    drawing = False
+
+    start = (0, 0)
+    ship_size = (0, 0)
+    rect_for_grids = (0, 0, size[0], upper_margin+12*block_size)
+    rect_for_message_and_buttons = (
+        0, upper_margin+11*block_size, size[0], 5*block_size)
+    message_rect_drawing_ships = (undo_button.rect_for_draw[0]+undo_button.rect_for_draw[2], upper_margin+11*block_size, size[0]-(
+        undo_button.rect_for_draw[0]+undo_button.rect_for_draw[2]), 4*block_size)
+    message_rect_computer = (left_margin-2*block_size,
+                            upper_margin+11*block_size, 14*block_size, 4*block_size)
+    message_rect_human = (left_margin+15*block_size,
+                        upper_margin+11*block_size, 10*block_size, 4*block_size)
+
     human_ships_to_draw = []
     human_ships_set = set()
     used_blocks_for_manual_drawing = set()
@@ -669,46 +637,46 @@ def main():
     # (index 0 - number of one-block ships, index 3 - number of 4-block-ships, etc.).
     # Then update (increment) each respective index when respective ships is created .
     num_ships_list = [0, 0, 0, 0]
-
+    
     screen.fill(WHITE)
-    computer_grid = Grid("COMPUTER", 0)
-    human_grid = Grid("HUMAN", 15)
+    # We draw grids before while loops to optimize the RAM - 
+    # no need to redraw grids each time dozens times in a second
+    computer_grid = Grid("КОМПЬЮТЕР", 0)
+    human_grid = Grid("ЧЕЛОВЕК", 15)
     # draw_ships(computer.ships)
 
     while ships_creation_not_settled:
         # print("Started ships_creation_not_settled loop")
+    
         # Create two buttons to choose how to create ships - auto or manually
         auto_button.draw_button()
         manual_button.draw_button()
+        auto_button.change_color_on_hover()
+        manual_button.change_color_on_hover()
         auto_button.print_message_for_button()
 
-        # Chaging color of the button while hovering over with a mouse
-        mouse = pygame.mouse.get_pos()
-        if auto_button_rect.collidepoint(mouse):
-            auto_button.draw_button((200, 200, 200))
-        if manual_button_rect.collidepoint(mouse):
-            manual_button.draw_button((200, 200, 200))
-
         # Checking for mouse click
+        mouse = pygame.mouse.get_pos()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_over = True
                 ships_creation_not_settled = False
                 ships_not_created = False
-            # If "AUTO" button is selected
-            elif event.type == pygame.MOUSEBUTTONDOWN and auto_button_rect.collidepoint(mouse):
-                print("Cicked auto!", event.pos)
+            # If "AUTO" button is selected - create human ships automatically
+            elif event.type == pygame.MOUSEBUTTONDOWN and auto_button.rect.collidepoint(mouse):
+                print("Clicked auto!", event.pos)
                 human = AutoShips(15)
                 human_ships_to_draw = human.ships
+                human_ships_working = copy.deepcopy(human.ships)
                 human_ships_set = human.ships_set
                 ships_not_created = False
                 ships_creation_not_settled = False
-            # If "MANUAL" button is selected
-            elif event.type == pygame.MOUSEBUTTONDOWN and manual_button_rect.collidepoint(mouse):
-                print("Cicked manual!", event.pos)
+            # If "MANUAL" button is selected - break the loop and go into the next one
+            elif event.type == pygame.MOUSEBUTTONDOWN and manual_button.rect.collidepoint(mouse):
+                print("Clicked manual!", event.pos)
                 ships_creation_not_settled = False
         pygame.display.update()
-        # This must be here in the end,
+        # This screen.fill must be here in the end,
         # otherwise we will have remains of the buttons in the next while loop!
         screen.fill(WHITE, rect_for_message_and_buttons)
 
@@ -722,17 +690,18 @@ def main():
         undo_button.print_message_for_button()
         # Changing color of the button while hovering over with a mouse
         mouse = pygame.mouse.get_pos()
-        if undo_button_rect.collidepoint(mouse):
-            undo_button.draw_button((200, 200, 200))
-
+        undo_button.change_color_on_hover()
+        
+        # Make Undo button disabled when there are no ships to undo
         if not human_ships_to_draw:
-            undo_button.draw_button((200, 200, 200))
+            undo_button.draw_button(LIGHT_GRAY)
+        # Start of ships creation section
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 ships_not_created = False
                 game_over = True
-            elif undo_button_rect.collidepoint(mouse) and event.type == pygame.MOUSEBUTTONDOWN:
-                print("Undo CLIKED!")
+            elif undo_button.rect.collidepoint(mouse) and event.type == pygame.MOUSEBUTTONDOWN:
+                print("Undo clicked!")
                 if human_ships_to_draw:
                     deleted_ship = human_ships_to_draw.pop()
                     num_ships_list[len(deleted_ship)-1] -= 1
@@ -776,11 +745,11 @@ def main():
                         for block in range(start_block[0], end_block[0]+1):
                             temp_ship.append((block, start_block[1]))
                     else:
-                        show_messages_at_center(
+                        show_messages_at_rect_center(
                             "SHIP IS TOO LARGE! Try again!", message_rect_drawing_ships)
                         #print("SHIP IS TOO LARGE! Try again!")
                 else:
-                    show_messages_at_center(
+                    show_messages_at_rect_center(
                         "SHIP IS BEYOND YOUR GRID! Try again!", message_rect_drawing_ships)
                     #print("SHIP IS BEYOND YOUR GRID! Try again!")
                 if temp_ship:
@@ -796,17 +765,18 @@ def main():
                             used_blocks_for_manual_drawing = update_used_blocks(
                                 temp_ship, used_blocks_for_manual_drawing)
                         else:
-                            show_messages_at_center(
+                            show_messages_at_rect_center(
                                 f"There already are enough of {len(temp_ship)} ships!", message_rect_drawing_ships)
                             #print(f"There already are enough of {len(temp_ship)} ships. Try again with different ship")
                     else:
-                        show_messages_at_center(
+                        show_messages_at_rect_center(
                             "SHIPS ARE TOUCHING! Try again", message_rect_drawing_ships)
                         #print("SHIPS ARE TOUCHING! Try again")
             if len(human_ships_to_draw) == 10:
-                human = ManualShips(human_ships_to_draw)
+                human_ships_working = copy.deepcopy(human_ships_to_draw)
                 ships_not_created = False
-        pygame.draw.rect(screen, BLACK, (start, ship_size), 3)
+                screen.fill(WHITE, rect_for_message_and_buttons)
+        pygame.draw.rect(screen, INK, (start, ship_size), 3)
         # print("Here are your ships", human_ships_to_draw)
         draw_ships(human_ships_to_draw)
         pygame.display.update()
@@ -814,11 +784,13 @@ def main():
     while not game_over:
         # print("Started game main loop")
         # computer_grid = Grid("COMPUTER", 0)
-        # human_grid = Grid("HUMAN", 15*block_size)
-        draw_ships(human_ships_to_draw)
+        # human_grid = Grid("HUMAN", 15)
+        # draw_ships(computer.ships)
+        # TODO This should draw only computer destroyed ships.
+        # Check if the list contains human ships or not!
         draw_ships(destroyed_computer_ships)
-        #draw_ships(computer.ships)
         # print(destroyed_computer_ships)
+        draw_ships(human_ships_to_draw)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_over = True
@@ -830,29 +802,31 @@ def main():
                 if (left_margin < x < left_margin + 10*block_size) and (upper_margin < y < upper_margin + 10*block_size):
                     fired_block = ((x - left_margin) // block_size + 1,
                                    (y - upper_margin) // block_size + 1)
-                    computer_turn = not check_hit_or_miss(fired_block, computer.ships_list_to_remove_hits, False, computer.ships, computer.ships_set)
+                    computer_turn = not check_hit_or_miss(fired_block, computer_ships_working, False, computer.ships, computer.ships_set)
                     draw_from_dotted_set(dotted_set)
                     draw_hit_blocks(hit_blocks)
                     screen.fill(WHITE, message_rect_computer)
-                    show_messages_at_center(
-                        f"Your last move: {LETTERS[fired_block[0]-1] + str(fired_block[1])}", message_rect_computer, color=BLACK)
+                    show_messages_at_rect_center(
+                        f"Your last shot: {LETTERS[fired_block[0]-1] + str(fired_block[1])}", message_rect_computer, color=BLACK)
                     # pygame.time.delay(200)
                 else:
-                    show_messages_at_center(
+                    show_messages_at_rect_center(
                         "Your shot is outside of grid! Try again", message_rect_computer)
                 # screen.fill((255, 0, 0), last_rect)
         # pygame.time.delay(500)
 
         if computer_turn:
             # print(human_ships_working)
-            
-            computer_turn = check_hit_or_miss(fired_block, human.ships_list_to_remove_hits, True, human_ships_to_draw, human_ships_set)
+            set_to_shoot_from = computer_available_to_fire_set
+            if around_last_computer_hit_set:
+                set_to_shoot_from = around_last_computer_hit_set
+            fired_block = computer_shoots(set_to_shoot_from)
+            computer_turn = check_hit_or_miss(fired_block, human_ships_working, True, human_ships_to_draw, human_ships_set)
             draw_from_dotted_set(dotted_set)
             draw_hit_blocks(hit_blocks)
-            
             screen.fill(WHITE, message_rect_human)
-            show_messages_at_center(
-                f"Computer's last move: {LETTERS[fired_block[0]-16] + str(fired_block[1])}", message_rect_human, color=BLACK)
+            show_messages_at_rect_center(
+                f"Computer's last shot: {LETTERS[fired_block[0]-16] + str(fired_block[1])}", message_rect_human, color=BLACK)
             # This is just for testing and fun. It's not working as planned.
             last_rect = ((left_margin+15*block_size, upper_margin +
                           12*block_size), (10*block_size, block_size))
@@ -864,18 +838,14 @@ def main():
 
         if not computer.ships_set:
             last_rect = ((0, 0), (0, 0))
-            show_messages_at_center(
-                "YOU WON!", (0, 0, size[0], size[1]), notif_font)
+            show_messages_at_rect_center(
+                "YOU WON!", (0, 0, size[0], size[1]), game_over_font)
             # game_over = True
         if not human_ships_set:
             last_rect = ((0, 0), (0, 0))
-            show_messages_at_center(
-                "YOU LOST!", (0, 0, size[0], size[1]), notif_font)
+            show_messages_at_rect_center(
+                "YOU LOST!", (0, 0, size[0], size[1]), game_over_font)
             # game_over = True
-
-        # TODO This should draw only computer destroyed ships.
-        # Check if the list contains human ships or not!
-        # draw_ships(destroyed_computer_ships)
 
         pygame.display.update()
 
