@@ -102,12 +102,12 @@ class Grid:
 
 
 class Button:
-    def __init__(self, text, message, x_offset):
-        self.text = text
-        self.text_width, self.text_height = font.size(self.text)
-        self.message = message
+    def __init__(self, button_title, message_to_show, x_offset):
+        self.title = button_title
+        self.title_width, self.title_height = font.size(self.text)
+        self.message = message_to_show
 
-        self.button_width = self.text_width + block_size
+        self.button_width = self.title_width + block_size
         self.button_height = self.text_height + block_size
 
         self.x_start = x_offset
@@ -116,7 +116,7 @@ class Button:
         self.rect_for_draw = self.x_start, self.y_start, self.button_width, self.button_height
         self.rect = pygame.Rect(self.rect_for_draw)
         self.rect_for_button_text = self.x_start + self.button_width / 2 - \
-            self.text_width / 2, self.y_start + self.button_height / 2 - self.text_height / 2
+            self.title_width / 2, self.y_start + self.button_height / 2 - self.title_height / 2
         self.message_width, self.message_height = font.size(self.message)
         self.rect_for_message = self.x_start / 2 - self.message_width / 2, self.y_start + \
             self.button_height / 2 - self.message_height / 2
