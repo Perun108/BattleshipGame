@@ -104,22 +104,26 @@ class Grid:
 class Button:
     def __init__(self, button_title, message_to_show, x_offset):
         self.title = button_title
-        self.title_width, self.title_height = font.size(self.text)
+        self.title_width, self.title_height = font.size(self.title)
         self.message = message_to_show
 
         self.button_width = self.title_width + block_size
-        self.button_height = self.text_height + block_size
+        self.button_height = self.title_height + block_size
 
         self.x_start = x_offset
         self.y_start = upper_margin + 10 * block_size + self.button_height
 
         self.rect_for_draw = self.x_start, self.y_start, self.button_width, self.button_height
         self.rect = pygame.Rect(self.rect_for_draw)
+
         self.rect_for_button_text = self.x_start + self.button_width / 2 - \
             self.title_width / 2, self.y_start + self.button_height / 2 - self.title_height / 2
+        
         self.message_width, self.message_height = font.size(self.message)
+        
         self.rect_for_message = self.x_start / 2 - self.message_width / 2, self.y_start + \
             self.button_height / 2 - self.message_height / 2
+        
         self.color = BLACK
 
     def draw_button(self, color=None):
@@ -128,7 +132,7 @@ class Button:
         if not color:
             color = self.color
         pygame.draw.rect(screen, color, self.rect_for_draw)
-        text_to_blit = font.render(self.text, True, WHITE)
+        text_to_blit = font.render(self.title, True, WHITE)
         screen.blit(text_to_blit, self.rect_for_button_text)
 
     def change_color_on_hover(self):
@@ -545,9 +549,9 @@ def show_messages_at_rect_center(text, rect, which_font=font, color=RED):
     text_width, text_height = which_font.size(text)
     text_rect = pygame.Rect(rect)
 
-    x_start = text_rect.centerx - text_width//2
-    y_start = text_rect.centery - text_height//2
-    background_rect = pygame.Rect(x_start, y_start, text_width, text_height)
+    x_start = text_rect.centerx - text_width / 2
+    y_start = text_rect.centery - text_height / 2
+    background_rect = pygame.Rect(x_start - block_size / 2, y_start, text_width + block_size, text_height)
     text_to_blit = which_font.render(text, True, color)
     screen.fill(WHITE, background_rect)
     screen.blit(text_to_blit, (x_start, y_start))
