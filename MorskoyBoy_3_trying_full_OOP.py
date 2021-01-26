@@ -102,7 +102,7 @@ class Grid:
 
 
 class Button:
-    def __init__(self, button_title, message_to_show, x_offset):
+    def __init__(self, x_offset, button_title, message_to_show):
         self.title = button_title
         self.title_width, self.title_height = font.size(self.title)
         self.message = message_to_show
@@ -119,16 +119,17 @@ class Button:
         self.rect_for_button_text = self.x_start + self.button_width / 2 - \
             self.title_width / 2, self.y_start + self.button_height / 2 - self.title_height / 2
         
-        self.message_width, self.message_height = font.size(self.message)
-        
-        self.rect_for_message = self.x_start / 2 - self.message_width / 2, self.y_start + \
-            self.button_height / 2 - self.message_height / 2
-        
         self.color = BLACK
 
     def draw_button(self, color=None):
-        # Default color will be BLACK as in class constructor
-        # but we need to also change it when a button is hovered over or disabled
+        """
+        Draws button and prints its name (title) within it
+
+        Args:
+            color (tuple, optional): Default color will be BLACK as in class constructor
+        but we need to also change it when a button is hovered over or disabled. 
+        Defaults to None.
+        """
         if not color:
             color = self.color
         pygame.draw.rect(screen, color, self.rect_for_draw)
@@ -136,14 +137,22 @@ class Button:
         screen.blit(text_to_blit, self.rect_for_button_text)
 
     def change_color_on_hover(self):
-        # Changing color of the button while hovering over with a mouse
+        """
+        Changing color of the button while hovering over with a mouse
+        """
         mouse = pygame.mouse.get_pos()
         if self.rect.collidepoint(mouse):
             self.draw_button(GREEN_BLUE)
 
     def print_message_for_button(self):
-        text = font.render(self.message, True, BLACK)
-        screen.blit(text, self.rect_for_message)
+        """
+        Shows explanatory message next to button
+        """
+        if self.message:
+            self.message_width, self.message_height = font.size(self.message)
+            self.rect_for_message = self.x_start / 2 - self.message_width / 2, self.y_start + self.button_height / 2 - self.message_height / 2
+            text = font.render(self.message, True, BLACK)
+            screen.blit(text, self.rect_for_message)
 
 
 class AutoShips:
@@ -606,9 +615,9 @@ auto_button_place = left_margin + 17*block_size
 manual_button_place = left_margin + 20*block_size
 undo_button_place = left_margin + 12*block_size
 
-auto_button = Button("AUTO", message_one, auto_button_place)
-manual_button = Button("MANUAL", message_one, manual_button_place)
-undo_button = Button("UNDO LAST SHIP", undo_message, undo_button_place)
+auto_button = Button(auto_button_place, "AUTO", message_one)
+manual_button = Button(manual_button_place, "MANUAL", None)
+undo_button = Button(undo_button_place, "UNDO LAST SHIP", undo_message)
 #auto_button_rect = pygame.Rect(auto_button.rect_for_draw)
 #manual_button_rect = pygame.Rect(manual_button.rect_for_draw)
 #undo_button_rect = pygame.Rect(undo_button.rect_for_draw)
