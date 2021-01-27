@@ -7,8 +7,8 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 LIGHT_GRAY = (192, 192, 192)
 GREEN_BLUE = (0, 153, 153)
-INK = (39, 64, 139)
-VIOLET = (6, 10, 88)
+# INK = (39, 64, 139)
+# VIOLET = (6, 10, 88)
 
 block_size = 50
 left_margin = 5*block_size
@@ -789,7 +789,7 @@ def main():
                 human_ships_working = copy.deepcopy(human_ships_to_draw)
                 ships_not_created = False
                 screen.fill(WHITE, rect_for_message_and_buttons)
-        pygame.draw.rect(screen, INK, (start, ship_size), 3)
+        pygame.draw.rect(screen, BLACK, (start, ship_size), 3)
         # print("Here are your ships", human_ships_to_draw)
         draw_ships(human_ships_to_draw)
         pygame.display.update()
