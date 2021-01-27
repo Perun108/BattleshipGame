@@ -141,6 +141,11 @@ class Button:
         self.__color = BLACK
 
     def draw_button(self, color=None):
+        """
+        Draws button as a rectangle of color (default is BLACK)
+        Args:
+            color (tuple, optional): Button's color. Defaults to None (BLACK).
+        """
         if not color:
             color = self.__color
         pygame.draw.rect(screen, color, self.rect_for_draw)
@@ -148,11 +153,17 @@ class Button:
         screen.blit(text_to_blit, self.__rect_for_button_title)
 
     def change_color_on_hover(self):
+        """
+        Draws button as a rectangle of GREEN_BLUE color
+        """
         mouse = pygame.mouse.get_pos()
         if self.rect.collidepoint(mouse):
             self.draw_button(GREEN_BLUE)
 
     def print_message_for_button(self):
+        """
+        Prints explanatory message next to button
+        """
         message_width, message_height = font.size(self.__message)
         rect_for_message = self.__x_start / 2 - message_width / \
             2, self.__y_start + self.__button_height / 2 - message_height / 2
