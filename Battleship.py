@@ -120,11 +120,9 @@ class Button:
         __color (tuple): color of button (Default is BLACK, hovered is GREEN_BLUE, disabled is LIGHT_GRAY)
     ----------
     Methods:
-
-    __draw_grid(): Draws two grids for both players
-    __add_nums_letters_to_grid(): Draws numbers 1-10 along vertical and adds letters below horizontal
-        lines for both grids
-    __sign_grid(): Puts players' names (titles) in the center above the grids
+    draw_button(): Draws button as a rectangle of color (default is BLACK)
+    change_color_on_hover(): Draws button as a rectangle of GREEN_BLUE color
+    print_message_for_button(): Prints explanatory message next to button
     """
 
     def __init__(self, x_offset, button_title, message_to_show):
