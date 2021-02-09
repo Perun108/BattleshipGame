@@ -19,7 +19,6 @@ size = (left_margin+30*block_size, upper_margin+15*block_size)
 LETTERS = "АБВГДЕЖЗИК"
 
 pygame.init()
-# clock = pygame.time.Clock()
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Morskoy Boy")
 # This ratio is purely for scaling the font according to the block size
