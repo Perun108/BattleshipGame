@@ -4,9 +4,9 @@ import copy
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-LIGHT_GRAY = (192, 192, 192)
 GREEN_BLUE = (0, 153, 153)
+LIGHT_GRAY = (192, 192, 192)
+RED = (255, 0, 0)
 # INK = (39, 64, 139)
 # VIOLET = (6, 10, 88)
 
@@ -116,7 +116,11 @@ class Button:
         self.rect_for_draw = self.x_start, self.y_start, self.button_width, self.button_height
         self.rect = pygame.Rect(self.rect_for_draw)
 
+<<<<<<< HEAD
         self.rect_for_button_text = self.x_start + self.button_width / 2 - \
+=======
+        self.rect_for_button_title = self.x_start + self.button_width / 2 - \
+>>>>>>> 255503c (MorskoyBoy_3_trying_full_OOP.py)
             self.title_width / 2, self.y_start + \
             self.button_height / 2 - self.title_height / 2
 
@@ -135,7 +139,7 @@ class Button:
             color = self.color
         pygame.draw.rect(screen, color, self.rect_for_draw)
         text_to_blit = font.render(self.title, True, WHITE)
-        screen.blit(text_to_blit, self.rect_for_button_text)
+        screen.blit(text_to_blit, self.rect_for_button_title)
 
     def change_color_on_hover(self):
         """
@@ -149,12 +153,20 @@ class Button:
         """
         Shows explanatory message next to button
         """
+<<<<<<< HEAD
         if self.message:
             self.message_width, self.message_height = font.size(self.message)
             self.rect_for_message = self.x_start / 2 - self.message_width / \
                 2, self.y_start + self.button_height / 2 - self.message_height / 2
             text = font.render(self.message, True, BLACK)
             screen.blit(text, self.rect_for_message)
+=======
+        self.message_width, self.message_height = font.size(self.message)
+        self.rect_for_message = self.x_start / 2 - self.message_width / \
+            2, self.y_start + self.button_height / 2 - self.message_height / 2
+        text = font.render(self.message, True, BLACK)
+        screen.blit(text, self.rect_for_message)
+>>>>>>> 255503c (MorskoyBoy_3_trying_full_OOP.py)
 
 
 class AutoShips:
@@ -615,14 +627,15 @@ def restore_used_blocks(deleted_ship, used_blocks_set):
 computer = AutoShips(0)
 computer_ships_working = copy.deepcopy(computer.ships)
 
-message_one = "How do you want to create your ships? Click the button"
-undo_message = "To undo the last ship click the button"
 auto_button_place = left_margin + 17*block_size
 manual_button_place = left_margin + 20*block_size
+how_to_create_ships_message = "How do you want to create your ships? Click the button"
+
+undo_message = "To undo the last ship click the button"
 undo_button_place = left_margin + 12*block_size
 
-auto_button = Button(auto_button_place, "AUTO", message_one)
-manual_button = Button(manual_button_place, "MANUAL", None)
+auto_button = Button(auto_button_place, "AUTO", how_to_create_ships_message)
+manual_button = Button(manual_button_place, "MANUAL", how_to_create_ships_message)
 undo_button = Button(undo_button_place, "UNDO LAST SHIP", undo_message)
 #auto_button_rect = pygame.Rect(auto_button.rect_for_draw)
 #manual_button_rect = pygame.Rect(manual_button.rect_for_draw)
@@ -631,24 +644,28 @@ undo_button = Button(undo_button_place, "UNDO LAST SHIP", undo_message)
 
 def main():
     # last_rect = ((0, 0), (0, 0))
-    ships_creation_not_settled = True
+    ships_creation_not_decided = True
     ships_not_created = True
     drawing = False
     game_over = False
     computer_turn = False
 
-    start = (0, 0)
-    ship_size = (0, 0)
     rect_for_grids = (0, 0, size[0], upper_margin+12*block_size)
     rect_for_message_and_buttons = (
         0, upper_margin+11*block_size, size[0], 5*block_size)
+
+    start = (0, 0)
+    ship_size = (0, 0)
     message_rect_drawing_ships = (undo_button.rect_for_draw[0]+undo_button.rect_for_draw[2], upper_margin+11*block_size, size[0]-(
         undo_button.rect_for_draw[0]+undo_button.rect_for_draw[2]), 4*block_size)
     message_rect_computer = (left_margin-2*block_size,
                              upper_margin+11*block_size, 14*block_size, 4*block_size)
     message_rect_human = (left_margin+15*block_size,
                           upper_margin+11*block_size, 10*block_size, 4*block_size)
+<<<<<<< HEAD
 
+=======
+>>>>>>> 255503c (MorskoyBoy_3_trying_full_OOP.py)
     human_ships_to_draw = []
     human_ships_set = set()
     used_blocks_for_manual_drawing = set()
@@ -664,8 +681,13 @@ def main():
     human_grid = Grid("ЧЕЛОВЕК", 15)
     # draw_ships(computer.ships)
 
+<<<<<<< HEAD
     while ships_creation_not_settled:
         # print("Started ships_creation_not_settled loop")
+=======
+    while ships_creation_not_decided:
+        # print("Started ships_creation_not_decided loop")
+>>>>>>> 255503c (MorskoyBoy_3_trying_full_OOP.py)
 
         # Create two buttons to choose how to create ships - auto or manually
         auto_button.draw_button()
@@ -679,7 +701,7 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_over = True
-                ships_creation_not_settled = False
+                ships_creation_not_decided = False
                 ships_not_created = False
             # If "AUTO" button is selected - create human ships automatically
             elif event.type == pygame.MOUSEBUTTONDOWN and auto_button.rect.collidepoint(mouse):
@@ -689,11 +711,11 @@ def main():
                 human_ships_working = copy.deepcopy(human.ships)
                 human_ships_set = human.ships_set
                 ships_not_created = False
-                ships_creation_not_settled = False
+                ships_creation_not_decided = False
             # If "MANUAL" button is selected - break the loop and go into the next one
             elif event.type == pygame.MOUSEBUTTONDOWN and manual_button.rect.collidepoint(mouse):
                 print("Clicked manual!", event.pos)
-                ships_creation_not_settled = False
+                ships_creation_not_decided = False
         pygame.display.update()
         # This screen.fill must be here in the end,
         # otherwise we will have remains of the buttons in the next while loop!
