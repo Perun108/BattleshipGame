@@ -28,11 +28,13 @@ font = pygame.font.SysFont('notosans', font_size)
 computer_available_to_fire_set = {(x, y)
                                   for x in range(16, 26) for y in range(1, 11)}
 around_last_computer_hit_set = set()
-hit_blocks = set()
-dotted_set = set()
 dotted_set_for_computer_not_to_shoot = set()
 hit_blocks_for_computer_not_to_shoot = set()
 last_hits_list = []
+###################
+
+hit_blocks = set()
+dotted_set = set()
 destroyed_computer_ships = []
 
 
