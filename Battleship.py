@@ -11,7 +11,7 @@ RED = (255, 0, 0)
 block_size = 50
 left_margin = 5 * block_size
 upper_margin = 2 * block_size
-
+# 30 = 2x10 blocks width in two grids + hard-coded 5*blocks gap after each grid!
 size = (left_margin + 30 * block_size, upper_margin + 15 * block_size)
 # LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
 LETTERS = "АБВГДЕЖЗИК"
@@ -20,7 +20,7 @@ pygame.init()
 
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("МОРСКОЙ БОЙ")
-
+# This ratio is purely for scaling the font according to the block size
 font_size = int(block_size / 1.5)
 font = pygame.font.SysFont('notosans', font_size)
 
@@ -94,9 +94,8 @@ class Grid:
             screen.blit(num_ver, (left_margin - (block_size // 2 + num_ver_width // 2) + self.offset * block_size,
                                   upper_margin + i * block_size + (block_size // 2 - num_ver_height // 2)))
             # Letters (horizontal)
-            screen.blit(letters_hor, (left_margin + i * block_size + (block_size // 2 - letters_hor_width // 2) +
-                                      self.offset * block_size,
-                                      upper_margin + 10 * block_size))
+            screen.blit(letters_hor, (left_margin + i * block_size + (block_size // 2 -
+                                                                      letters_hor_width // 2) + self.offset * block_size, upper_margin + 10 * block_size))
 
     def __sign_grid(self):
         """
@@ -104,8 +103,8 @@ class Grid:
         """
         player = font.render(self.title, True, BLACK)
         sign_width = player.get_width()
-        screen.blit(player, (left_margin + 5 * block_size - sign_width // 2 + self.offset * block_size,
-                             upper_margin - block_size // 2 - font_size))
+        screen.blit(player, (left_margin + 5 * block_size - sign_width // 2 +
+                             self.offset * block_size, upper_margin - block_size // 2 - font_size))
 
 
 class Button:
@@ -591,7 +590,6 @@ def main():
     screen.fill(WHITE)
     computer_grid = Grid("КОМПЬЮТЕР", 0)
     human_grid = Grid("ЧЕЛОВЕК", 15)
-    pygame.display.update()
 
     while ships_creation_not_decided:
         auto_button.draw_button()
