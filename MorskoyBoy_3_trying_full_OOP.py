@@ -116,7 +116,7 @@ class Button:
         self.rect_for_draw = self.x_start, self.y_start, self.button_width, self.button_height
         self.rect = pygame.Rect(self.rect_for_draw)
 
-        self.rect_for_button_text = self.x_start + self.button_width / 2 - \
+        self.rect_for_button_title = self.x_start + self.button_width / 2 - \
             self.title_width / 2, self.y_start + \
             self.button_height / 2 - self.title_height / 2
 
