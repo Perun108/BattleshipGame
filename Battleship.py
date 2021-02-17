@@ -577,14 +577,17 @@ manual_button = Button(manual_button_place, "ВРУЧНУЮ",
 
 
 def main():
-    game_over = False
-    computer_turn = False
     ships_creation_not_decided = True
     ships_not_created = True
+    game_over = False
+    computer_turn = False
+
     rect_for_grids = (0, 0, size[0], upper_margin + 12 * block_size)
     rect_for_messages_and_buttons = (
         0, upper_margin + 11 * block_size, size[0], 5 * block_size)
+
     human_ships_to_draw = []
+
     screen.fill(WHITE)
     computer_grid = Grid("КОМПЬЮТЕР", 0)
     human_grid = Grid("ЧЕЛОВЕК", 15)
