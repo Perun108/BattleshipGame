@@ -22,8 +22,9 @@ screen = pygame.display.set_mode(size)
 pygame.display.set_caption("МОРСКОЙ БОЙ")
 
 font_size = int(block_size / 1.5)
-
 font = pygame.font.SysFont('notosans', font_size)
+
+### COMPUTER DATA ###
 computer_available_to_fire_set = {(x, y)
                                   for x in range(16, 26) for y in range(1, 11)}
 around_last_computer_hit_set = set()
