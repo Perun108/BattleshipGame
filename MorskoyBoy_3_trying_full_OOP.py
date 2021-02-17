@@ -2,9 +2,7 @@ import pygame
 import random
 import copy
 
-
 WHITE = (255, 255, 255)
-
 BLACK = (0, 0, 0)
 GREEN_BLUE = (0, 153, 153)
 LIGHT_GRAY = (192, 192, 192)
