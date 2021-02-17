@@ -116,11 +116,7 @@ class Button:
         self.rect_for_draw = self.x_start, self.y_start, self.button_width, self.button_height
         self.rect = pygame.Rect(self.rect_for_draw)
 
-<<<<<<< HEAD
         self.rect_for_button_text = self.x_start + self.button_width / 2 - \
-=======
-        self.rect_for_button_title = self.x_start + self.button_width / 2 - \
->>>>>>> 255503c (MorskoyBoy_3_trying_full_OOP.py)
             self.title_width / 2, self.y_start + \
             self.button_height / 2 - self.title_height / 2
 
@@ -153,20 +149,12 @@ class Button:
         """
         Shows explanatory message next to button
         """
-<<<<<<< HEAD
         if self.message:
             self.message_width, self.message_height = font.size(self.message)
             self.rect_for_message = self.x_start / 2 - self.message_width / \
                 2, self.y_start + self.button_height / 2 - self.message_height / 2
             text = font.render(self.message, True, BLACK)
             screen.blit(text, self.rect_for_message)
-=======
-        self.message_width, self.message_height = font.size(self.message)
-        self.rect_for_message = self.x_start / 2 - self.message_width / \
-            2, self.y_start + self.button_height / 2 - self.message_height / 2
-        text = font.render(self.message, True, BLACK)
-        screen.blit(text, self.rect_for_message)
->>>>>>> 255503c (MorskoyBoy_3_trying_full_OOP.py)
 
 
 class AutoShips:
@@ -635,7 +623,8 @@ undo_message = "To undo the last ship click the button"
 undo_button_place = left_margin + 12*block_size
 
 auto_button = Button(auto_button_place, "AUTO", how_to_create_ships_message)
-manual_button = Button(manual_button_place, "MANUAL", how_to_create_ships_message)
+manual_button = Button(manual_button_place, "MANUAL",
+                       how_to_create_ships_message)
 undo_button = Button(undo_button_place, "UNDO LAST SHIP", undo_message)
 #auto_button_rect = pygame.Rect(auto_button.rect_for_draw)
 #manual_button_rect = pygame.Rect(manual_button.rect_for_draw)
@@ -662,10 +651,6 @@ def main():
                              upper_margin+11*block_size, 14*block_size, 4*block_size)
     message_rect_human = (left_margin+15*block_size,
                           upper_margin+11*block_size, 10*block_size, 4*block_size)
-<<<<<<< HEAD
-
-=======
->>>>>>> 255503c (MorskoyBoy_3_trying_full_OOP.py)
     human_ships_to_draw = []
     human_ships_set = set()
     used_blocks_for_manual_drawing = set()
@@ -681,13 +666,8 @@ def main():
     human_grid = Grid("ЧЕЛОВЕК", 15)
     # draw_ships(computer.ships)
 
-<<<<<<< HEAD
-    while ships_creation_not_settled:
-        # print("Started ships_creation_not_settled loop")
-=======
     while ships_creation_not_decided:
         # print("Started ships_creation_not_decided loop")
->>>>>>> 255503c (MorskoyBoy_3_trying_full_OOP.py)
 
         # Create two buttons to choose how to create ships - auto or manually
         auto_button.draw_button()
