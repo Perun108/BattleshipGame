@@ -9,8 +9,8 @@ LIGHT_GRAY = (192, 192, 192)
 RED = (255, 0, 0)
 
 block_size = 50
-left_margin = 100
-upper_margin = 80
+left_margin = 5 * block_size
+upper_margin = 2 * block_size
 
 size = (left_margin + 30 * block_size, upper_margin + 15 * block_size)
 # LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
