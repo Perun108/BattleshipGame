@@ -19,7 +19,7 @@ LETTERS = "АБВГДЕЖЗИК"
 pygame.init()
 
 screen = pygame.display.set_mode(size)
-pygame.display.set_caption("Morskoy Boy")
+pygame.display.set_caption("МОРСКОЙ БОЙ")
 
 font_size = int(block_size / 1.5)
 
