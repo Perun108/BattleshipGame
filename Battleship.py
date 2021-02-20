@@ -564,6 +564,42 @@ def draw_hit_blocks(hit_blocks_to_draw_from):
                          (x1 + block_size, y1), block_size // 6)
 
 
+def show_message_at_rect_center(text, rect, which_font=font, color=RED):
+    text_width, text_height = which_font.size(text)
+    text_rect = pygame.Rect(rect)
+    x_start = text_rect.centerx - text_width / 2
+    y_start = text_rect.centery - text_height / 2
+    background_rect = pygame.Rect(
+        x_start - block_size / 2, y_start, text_width + block_size, text_height)
+    text_to_blit = which_font.render(text, True, color)
+    screen.fill(WHITE, background_rect)
+    screen.blit(text_to_blit, (x_start, y_start))
+
+
+def ship_is_valid(ship_set, blocks_for_manual_drawing):
+    return ship_set.isdisjoint(blocks_for_manual_drawing)
+
+
+def check_ships_numbers(ship, num_ships_list):
+    return (5 - len(ship)) > num_ships_list[len(ship)-1]
+
+
+def update_used_blocks(ship, used_blocks_set):
+    for block in ship:
+        for i in range(-1, 2):
+            for j in range(-1, 2):
+                used_blocks_set.add((block[0]+i, block[1]+j))
+    return used_blocks_set
+
+
+def restore_used_blocks(deleted_ship, used_blocks_set):
+    for block in deleted_ship:
+        for i in range(-1, 2):
+            for j in range(-1, 2):
+                used_blocks_set.discard((block[0]+i, block[1]+j))
+    return used_blocks_set
+
+
 computer = AutoShips(0)
 computer_ships_working = copy.deepcopy(computer.ships)
 
@@ -573,19 +609,29 @@ how_to_create_ships_message = "Как вы хотите создать кора�
 auto_button = Button(auto_button_place, "АВТО", how_to_create_ships_message)
 manual_button = Button(manual_button_place, "ВРУЧНУЮ",
                        how_to_create_ships_message)
+undo_message = "Для отмены последнего корабля нажмите кнопку"
+undo_button_place = left_margin + 12 * block_size
+undo_button = Button(undo_button_place, "ОТМЕНА", undo_message)
 
 
 def main():
     ships_creation_not_decided = True
     ships_not_created = True
+    drawing = False
     game_over = False
     computer_turn = False
+    start = (0, 0)
+    ship_size = (0, 0)
 
     rect_for_grids = (0, 0, size[0], upper_margin + 12 * block_size)
     rect_for_messages_and_buttons = (
         0, upper_margin + 11 * block_size, size[0], 5 * block_size)
-
+    message_rect_for_drawing_ships = (undo_button.rect_for_draw[0] + undo_button.rect_for_draw[2], upper_margin + 11 * block_size, size[0]-(
+        undo_button.rect_for_draw[0] + undo_button.rect_for_draw[2]), 4 * block_size)
     human_ships_to_draw = []
+    human_ships_set = set()
+    used_blocks_for_manual_drawing = set()
+    num_ships_list = [0, 0, 0, 0]
 
     screen.fill(WHITE)
     computer_grid = Grid("КОМПЬЮТЕР", 0)
@@ -609,12 +655,92 @@ def main():
                 print("Clicked AUTO!", event.pos)
                 human = AutoShips(15)
                 human_ships_to_draw = human.ships
+                human_ships_set = human.ships_set
                 human_ships_working = copy.deepcopy(human.ships)
                 ships_creation_not_decided = False
                 ships_not_created = False
+            elif event.type == pygame.MOUSEBUTTONDOWN and manual_button.rect.collidepoint(mouse):
+                ships_creation_not_decided = False
 
         pygame.display.update()
         screen.fill(WHITE, rect_for_messages_and_buttons)
+
+    while ships_not_created:
+        screen.fill(WHITE, rect_for_grids)
+        computer_grid = Grid("КОМПЬЮТЕР", 0)
+        human_grid = Grid("ЧЕЛОВЕК", 15)
+        undo_button.draw_button()
+        undo_button.print_message_for_button()
+        undo_button.change_color_on_hover()
+        mouse = pygame.mouse.get_pos()
+        if not human_ships_to_draw:
+            undo_button.draw_button(LIGHT_GRAY)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                ships_not_created = False
+                game_over = True
+            elif undo_button.rect.collidepoint(mouse) and event.type == pygame.MOUSEBUTTONDOWN:
+                if human_ships_to_draw:
+                    deleted_ship = human_ships_to_draw.pop()
+                    num_ships_list[len(deleted_ship) - 1] -= 1
+                    used_blocks_for_manual_drawing = restore_used_blocks(
+                        deleted_ship, used_blocks_for_manual_drawing)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                drawing = True
+                x_start, y_start = event.pos
+                start = x_start, y_start
+                ship_size = (0, 0)
+            elif drawing and event.type == pygame.MOUSEMOTION:
+                x_end, y_end = event.pos
+                end = x_end, y_end
+                ship_size = x_end - x_start, y_end - y_start
+            elif drawing and event.type == pygame.MOUSEBUTTONUP:
+                x_end, y_end = event.pos
+                drawing = False
+                ship_size = (0, 0)
+                start_block = ((x_start - left_margin) // block_size + 1,
+                               (y_start - upper_margin) // block_size + 1)
+                end_block = ((x_end - left_margin) // block_size + 1,
+                             (y_end - upper_margin) // block_size + 1)
+                if start_block > end_block:
+                    start_block, end_block = end_block, start_block
+                temp_ship = []
+                if 15 < start_block[0] < 26 and 0 < start_block[1] < 11 and 15 < end_block[0] < 26 and 0 < end_block[1] < 11:
+                    screen.fill(WHITE, message_rect_for_drawing_ships)
+                    if start_block[0] == end_block[0] and (end_block[1] - start_block[1]) < 4:
+                        for block in range(start_block[1], end_block[1]+1):
+                            temp_ship.append((start_block[0], block))
+                    elif start_block[1] == end_block[1] and (end_block[0] - start_block[0]) < 4:
+                        for block in range(start_block[0], end_block[0]+1):
+                            temp_ship.append((block, start_block[1]))
+                    else:
+                        show_message_at_rect_center(
+                            "КОРАБЛЬ СЛИШКОМ БОЛЬШОЙ!", message_rect_for_drawing_ships)
+                else:
+                    show_message_at_rect_center(
+                        "КОРАБЛЬ ЗА ПРЕДЕЛАМИ СЕТКИ!", message_rect_for_drawing_ships)
+                if temp_ship:
+                    temp_ship_set = set(temp_ship)
+                    if ship_is_valid(temp_ship_set, used_blocks_for_manual_drawing):
+                        if check_ships_numbers(temp_ship, num_ships_list):
+                            num_ships_list[len(temp_ship) - 1] += 1
+                            human_ships_to_draw.append(temp_ship)
+                            human_ships_set |= temp_ship_set
+                            used_blocks_for_manual_drawing = update_used_blocks(
+                                temp_ship, used_blocks_for_manual_drawing)
+                        else:
+                            show_message_at_rect_center(
+                                f"УЖЕ ДОСТАТОЧНО {len(temp_ship)}-ПАЛУБНЫХ КОРАБЛЕЙ", message_rect_for_drawing_ships)
+                    else:
+                        show_message_at_rect_center(
+                            "КОРАБЛИ ПРИКАСАЮТСЯ!", message_rect_for_drawing_ships)
+            if len(human_ships_to_draw) == 10:
+                ships_not_created = False
+                human_ships_working = copy.deepcopy(human_ships_to_draw)
+                screen.fill(WHITE, rect_for_messages_and_buttons)
+        pygame.draw.rect(screen, BLACK, (start, ship_size), 3)
+        draw_ships(human_ships_to_draw)
+        pygame.display.update()
 
     while not game_over:
         draw_ships(human_ships_to_draw)
