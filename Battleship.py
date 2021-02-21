@@ -564,24 +564,24 @@ def draw_hit_blocks(hit_blocks_to_draw_from):
                          (x1 + block_size, y1), block_size // 6)
 
 
-def show_message_at_rect_center(text, rect, which_font=font, color=RED):
+def show_message_at_rect_center(message, rect, which_font=font, color=RED):
     """
     Prints message to screen at a given rect's center.
     Args:
-        text (str): Message to print
+        message (str): Message to print
         rect (tuple): rectangle in (x_start, y_start, width, height) format
         which_font (pygame font object, optional): What font to use to print message. Defaults to font.
         color (tuple, optional): Color of the message. Defaults to RED.
     """
-    text_width, text_height = which_font.size(text)
-    text_rect = pygame.Rect(rect)
-    x_start = text_rect.centerx - text_width / 2
-    y_start = text_rect.centery - text_height / 2
+    message_width, message_height = which_font.size(message)
+    message_rect = pygame.Rect(rect)
+    x_start = message_rect.centerx - message_width / 2
+    y_start = message_rect.centery - message_height / 2
     background_rect = pygame.Rect(
-        x_start - block_size / 2, y_start, text_width + block_size, text_height)
-    text_to_blit = which_font.render(text, True, color)
+        x_start - block_size / 2, y_start, message_width + block_size, message_height)
+    message_to_blit = which_font.render(message, True, color)
     screen.fill(WHITE, background_rect)
-    screen.blit(text_to_blit, (x_start, y_start))
+    screen.blit(message_to_blit, (x_start, y_start))
 
 
 def ship_is_valid(ship_set, blocks_for_manual_drawing):
