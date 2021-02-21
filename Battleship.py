@@ -585,6 +585,15 @@ def show_message_at_rect_center(text, rect, which_font=font, color=RED):
 
 
 def ship_is_valid(ship_set, blocks_for_manual_drawing):
+    """
+    Checks if ship is not touching other ships
+    Args:
+        ship_set (set): Set with tuples of new ships' coordinates
+        blocks_for_manual_drawing (set): Set with all used blocks for other ships, including all blocks around ships.
+
+    Returns:
+        Bool: True if ships are not touching, False otherwise.
+    """
     return ship_set.isdisjoint(blocks_for_manual_drawing)
 
 
