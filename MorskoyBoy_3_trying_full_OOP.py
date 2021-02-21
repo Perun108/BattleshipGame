@@ -11,10 +11,10 @@ RED = (255, 0, 0)
 # VIOLET = (6, 10, 88)
 
 block_size = 50
-left_margin = 5*block_size
-upper_margin = 2*block_size
+left_margin = 5 * block_size
+upper_margin = 2 * block_size
 # 30 = 2x10 blocks width in two grids + hard-coded 5*blocks gap after each grid!
-size = (left_margin+30*block_size, upper_margin+15*block_size)
+size = (left_margin + 30 * block_size, upper_margin + 15 * block_size)
 # LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
 LETTERS = "АБВГДЕЖЗИК"
 
@@ -24,17 +24,17 @@ pygame.display.set_caption("Morskoy Boy")
 # This ratio is purely for scaling the font according to the block size
 font_size = int(block_size / 1.5)
 font = pygame.font.SysFont('notosans', font_size)
-game_over_font_size = 3*block_size
+game_over_font_size = 3 * block_size
 game_over_font = pygame.font.SysFont('notosans', game_over_font_size)
 
 ### COMPUTER DATA ###
-computer_available_to_fire_set = {(a, b)
-                                  for a in range(16, 26) for b in range(1, 11)}
+computer_available_to_fire_set = {(x, y)
+                                  for x in range(16, 26) for y in range(1, 11)}
 around_last_computer_hit_set = set()
 dotted_set_for_computer_not_to_shoot = set()
 hit_blocks_for_computer_not_to_shoot = set()
 last_hits_list = []
-############
+###################
 
 hit_blocks = set()
 dotted_set = set()
@@ -42,7 +42,8 @@ destroyed_computer_ships = []
 
 
 class Grid:
-    """Class to draw the grids and add title, numbers and letters to them
+    """
+    Class to draw the grids and add title, numbers and letters to them
     ----------
     Attributes:
         title (str): Players' name to be displayed on the top of his grid
@@ -68,37 +69,37 @@ class Grid:
         """
         for i in range(11):
             # Horizontal lines
-            pygame.draw.line(screen, BLACK, (left_margin+self.offset*block_size, upper_margin+i*block_size),
-                             (left_margin+(10+self.offset)*block_size, upper_margin+i*block_size), 1)
+            pygame.draw.line(screen, BLACK, (left_margin + self.offset * block_size, upper_margin + i * block_size),
+                             (left_margin + (10 + self.offset) * block_size, upper_margin + i * block_size), 1)
             # Vertical lines
-            pygame.draw.line(screen, BLACK, (left_margin+(i+self.offset)*block_size, upper_margin),
-                             (left_margin+(i+self.offset)*block_size, upper_margin+10*block_size), 1)
+            pygame.draw.line(screen, BLACK, (left_margin + (i + self.offset) * block_size, upper_margin),
+                             (left_margin + (i + self.offset) * block_size, upper_margin + 10 * block_size), 1)
 
     def add_nums_letters_to_grid(self):
         """Draws numbers 1-10 along vertical and adds letters below horizontal
         lines for both grids
         """
         for i in range(10):
-            num_ver = font.render(str(i+1), True, BLACK)
+            num_ver = font.render(str(i + 1), True, BLACK)
             letters_hor = font.render(LETTERS[i], True, BLACK)
             num_ver_width = num_ver.get_width()
             num_ver_height = num_ver.get_height()
             letters_hor_width = letters_hor.get_width()
 
             # Numbers (vertical)
-            screen.blit(num_ver, (left_margin - (block_size//2+num_ver_width//2)+self.offset*block_size,
-                                  upper_margin + i*block_size + (block_size//2 - num_ver_height//2)))
+            screen.blit(num_ver, (left_margin - (block_size // 2 + num_ver_width // 2) + self.offset * block_size,
+                                  upper_margin + i * block_size + (block_size // 2 - num_ver_height // 2)))
             # Letters (horizontal)
-            screen.blit(letters_hor, (left_margin + i*block_size + (block_size //
-                                                                    2 - letters_hor_width//2)+self.offset*block_size, upper_margin + 10*block_size))
+            screen.blit(letters_hor, (left_margin + i * block_size + (block_size // 2 -
+                                                                      letters_hor_width // 2) + self.offset * block_size, upper_margin + 10 * block_size))
 
     def sign_grid(self):
         """Puts players' names (titles) in the center above the grids
         """
         player = font.render(self.title, True, BLACK)
         sign_width = player.get_width()
-        screen.blit(player, (left_margin + 5*block_size - sign_width //
-                             2+self.offset*block_size, upper_margin - block_size//2 - font_size))
+        screen.blit(player, (left_margin + 5 * block_size - sign_width // 2 +
+                             self.offset * block_size, upper_margin - block_size // 2 - font_size))
 
 
 class Button:
@@ -220,7 +221,7 @@ class AutoShips:
 
         self.offset = offset
         self.available_blocks = {(x, y) for x in range(
-            1+self.offset, 11+self.offset) for y in range(1, 11)}
+            1 + self.offset, 11 + self.offset) for y in range(1, 11)}
         self.ships_set = set()
         self.ships = self.populate_grid()
 
@@ -335,7 +336,7 @@ class AutoShips:
         """
         ships_coordinates_list = []
         for number_of_blocks in range(4, 0, -1):
-            for _ in range(5-number_of_blocks):
+            for _ in range(5 - number_of_blocks):
                 new_ship = self.create_ship(
                     number_of_blocks, self.available_blocks)
                 ships_coordinates_list.append(new_ship)
@@ -391,7 +392,8 @@ def check_hit_or_miss(fired_block, opponents_ships_list, computer_turn, opponent
 
 
 def update_destroyed_ships(ind, computer_turn, opponents_ships_list_original_copy):
-    """Draws dots around and 'X's within a destroyed ship.
+    """
+    Draws dots around and 'X's within a destroyed ship.
     Draws rectangle around destroyed computer ships on grid1 (that were not visible before destruction)
     """
     ship = sorted(opponents_ships_list_original_copy[ind])
@@ -553,23 +555,24 @@ def draw_hit_blocks(hit_blocks):
                          (x1+block_size, y1), block_size//6)
 
 
-def show_messages_at_rect_center(text, rect, which_font=font, color=RED):
-    """Blits (prints) given message to the screen at the center of a given rectangle
-
-    Args:
-        text (str): text to be printed on the screen
-        rect (tuple): 4 values - (x_start, y_start, width, height)
+def show_message_at_rect_center(text, rect, which_font=font, color=RED):
     """
-    text_width, text_height = which_font.size(text)
-    text_rect = pygame.Rect(rect)
-
-    x_start = text_rect.centerx - text_width / 2
-    y_start = text_rect.centery - text_height / 2
+    Prints message to screen at a given rect's center.
+    Args:
+        message (str): Message to print
+        rect (tuple): rectangle in (x_start, y_start, width, height) format
+        which_font (pygame font object, optional): What font to use to print message. Defaults to font.
+        color (tuple, optional): Color of the message. Defaults to RED.
+    """
+    message_width, message_height = which_font.size(message)
+    message_rect = pygame.Rect(rect)
+    x_start = message_rect.centerx - message_width / 2
+    y_start = message_rect.centery - message_height / 2
     background_rect = pygame.Rect(
-        x_start - block_size / 2, y_start, text_width + block_size, text_height)
-    text_to_blit = which_font.render(text, True, color)
+        x_start - block_size / 2, y_start, message_width + block_size, message_height)
+    message_to_blit = which_font.render(message, True, color)
     screen.fill(WHITE, background_rect)
-    screen.blit(text_to_blit, (x_start, y_start))
+    screen.blit(message_to_blit, (x_start, y_start))
 
 # ===========MANUAL SHIPS CREATION SECTION==============
 
@@ -596,11 +599,15 @@ def ship_is_valid(ship_set, blocks_for_manual_drawing):
     return ship_set.isdisjoint(blocks_for_manual_drawing)
 
 
-def update_used_blocks(ship, used_blocks_set):
+def update_used_blocks(ship, used_blocks_set, , add_blocks=True):
     for block in ship:
         for i in range(-1, 2):
             for j in range(-1, 2):
-                used_blocks_set.add((block[0]+i, block[1]+j))
+                new_block = block[0]+i, block[1]+j
+                if add_blocks:
+                    used_blocks_set.add(new_block)
+                else:
+                    used_blocks_set.discard(new_block)
     return used_blocks_set
 
 
@@ -640,12 +647,12 @@ def main():
     computer_turn = False
 
     rect_for_grids = (0, 0, size[0], upper_margin+12*block_size)
-    rect_for_message_and_buttons = (
+    rect_for_messages_and_buttons = (
         0, upper_margin+11*block_size, size[0], 5*block_size)
 
     start = (0, 0)
     ship_size = (0, 0)
-    message_rect_drawing_ships = (undo_button.rect_for_draw[0]+undo_button.rect_for_draw[2], upper_margin+11*block_size, size[0]-(
+    message_rect_for_drawing_ships = (undo_button.rect_for_draw[0]+undo_button.rect_for_draw[2], upper_margin+11*block_size, size[0]-(
         undo_button.rect_for_draw[0]+undo_button.rect_for_draw[2]), 4*block_size)
     message_rect_computer = (left_margin-2*block_size,
                              upper_margin+11*block_size, 14*block_size, 4*block_size)
@@ -699,7 +706,7 @@ def main():
         pygame.display.update()
         # This screen.fill must be here in the end,
         # otherwise we will have remains of the buttons in the next while loop!
-        screen.fill(WHITE, rect_for_message_and_buttons)
+        screen.fill(WHITE, rect_for_messages_and_buttons)
 
     while ships_not_created:
         # These three drawing of grids and screen.fill are needed to draw new ships (rect)
@@ -726,8 +733,9 @@ def main():
                 if human_ships_to_draw:
                     deleted_ship = human_ships_to_draw.pop()
                     num_ships_list[len(deleted_ship)-1] -= 1
-                    used_blocks_for_manual_drawing = restore_used_blocks(
-                        deleted_ship, used_blocks_for_manual_drawing)
+                    used_blocks_for_manual_drawing = update_used_blocks(
+                        deleted_ship, used_blocks_for_manual_drawing, False)
+                    screen.fill(WHITE, message_rect_for_drawing_ships)
                 print(num_ships_list)
                 print(human_ships_to_draw)
 
@@ -758,7 +766,7 @@ def main():
                     start_block, end_block = end_block, start_block
                 temp_ship = []
                 if 15 < start_block[0] < 26 and 0 < start_block[1] < 11 and 15 < end_block[0] < 26 and 0 < end_block[1] < 11:
-                    screen.fill(WHITE, message_rect_drawing_ships)
+                    screen.fill(WHITE, message_rect_for_drawing_ships)
                     if start_block[0] == end_block[0] and (end_block[1] - start_block[1]) < 4:
                         for block in range(start_block[1], end_block[1]+1):
                             temp_ship.append((start_block[0], block))
@@ -766,12 +774,12 @@ def main():
                         for block in range(start_block[0], end_block[0]+1):
                             temp_ship.append((block, start_block[1]))
                     else:
-                        show_messages_at_rect_center(
-                            "SHIP IS TOO LARGE! Try again!", message_rect_drawing_ships)
+                        show_message_at_rect_center(
+                            "SHIP IS TOO LARGE! Try again!", message_rect_for_drawing_ships)
                         #print("SHIP IS TOO LARGE! Try again!")
                 else:
-                    show_messages_at_rect_center(
-                        "SHIP IS BEYOND YOUR GRID! Try again!", message_rect_drawing_ships)
+                    show_message_at_rect_center(
+                        "SHIP IS BEYOND YOUR GRID! Try again!", message_rect_for_drawing_ships)
                     #print("SHIP IS BEYOND YOUR GRID! Try again!")
                 if temp_ship:
                     temp_ship_set = set(temp_ship)
@@ -784,19 +792,19 @@ def main():
                             human_ships_set |= temp_ship_set
                             print(human_ships_set)
                             used_blocks_for_manual_drawing = update_used_blocks(
-                                temp_ship, used_blocks_for_manual_drawing)
+                                temp_ship, used_blocks_for_manual_drawing, True)
                         else:
-                            show_messages_at_rect_center(
-                                f"There already are enough of {len(temp_ship)} ships!", message_rect_drawing_ships)
+                            show_message_at_rect_center(
+                                f"There already are enough of {len(temp_ship)} ships!", message_rect_for_drawing_ships)
                             #print(f"There already are enough of {len(temp_ship)} ships. Try again with different ship")
                     else:
-                        show_messages_at_rect_center(
-                            "SHIPS ARE TOUCHING! Try again", message_rect_drawing_ships)
+                        show_message_at_rect_center(
+                            "SHIPS ARE TOUCHING! Try again", message_rect_for_drawing_ships)
                         #print("SHIPS ARE TOUCHING! Try again")
             if len(human_ships_to_draw) == 10:
                 human_ships_working = copy.deepcopy(human_ships_to_draw)
                 ships_not_created = False
-                screen.fill(WHITE, rect_for_message_and_buttons)
+                screen.fill(WHITE, rect_for_messages_and_buttons)
         pygame.draw.rect(screen, BLACK, (start, ship_size), 3)
         # print("Here are your ships", human_ships_to_draw)
         draw_ships(human_ships_to_draw)
@@ -812,6 +820,8 @@ def main():
         draw_ships(destroyed_computer_ships)
         # print(destroyed_computer_ships)
         draw_ships(human_ships_to_draw)
+        show_message_at_rect_center(
+            "GAME STARTED! YOUR MOVE!", rect_for_messages_and_buttons)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_over = True
@@ -828,11 +838,11 @@ def main():
                     draw_from_dotted_set(dotted_set)
                     draw_hit_blocks(hit_blocks)
                     screen.fill(WHITE, message_rect_computer)
-                    show_messages_at_rect_center(
+                    show_message_at_rect_center(
                         f"Your last shot: {LETTERS[fired_block[0]-1] + str(fired_block[1])}", message_rect_computer, color=BLACK)
                     # pygame.time.delay(200)
                 else:
-                    show_messages_at_rect_center(
+                    show_message_at_rect_center(
                         "Your shot is outside of grid! Try again", message_rect_computer)
                 # screen.fill((255, 0, 0), last_rect)
         # pygame.time.delay(500)
@@ -848,7 +858,7 @@ def main():
             draw_from_dotted_set(dotted_set)
             draw_hit_blocks(hit_blocks)
             screen.fill(WHITE, message_rect_human)
-            show_messages_at_rect_center(
+            show_message_at_rect_center(
                 f"Computer's last shot: {LETTERS[fired_block[0]-16] + str(fired_block[1])}", message_rect_human, color=BLACK)
             # This is just for testing and fun. It's not working as planned.
             last_rect = ((left_margin+15*block_size, upper_margin +
@@ -861,12 +871,12 @@ def main():
 
         if not computer.ships_set:
             last_rect = ((0, 0), (0, 0))
-            show_messages_at_rect_center(
+            show_message_at_rect_center(
                 "YOU WON!", (0, 0, size[0], size[1]), game_over_font)
             # game_over = True
         if not human_ships_set:
             last_rect = ((0, 0), (0, 0))
-            show_messages_at_rect_center(
+            show_message_at_rect_center(
                 "YOU LOST!", (0, 0, size[0], size[1]), game_over_font)
             # game_over = True
 
