@@ -598,6 +598,17 @@ def ship_is_valid(ship_set, blocks_for_manual_drawing):
 
 
 def check_ships_numbers(ship, num_ships_list):
+    """
+    Checks if a ship of particular length (1-4) does not exceed necessary quantity (4-1).
+
+    Args:
+        ship (list): List with new ships' coordinates
+        num_ships_list (list): List with numbers of particular ships on respective indexes.
+
+    Returns:
+        Bool: True if the number of ships of particular length is not greater than needed, 
+            False if there are enough of such ships.
+    """
     return (5 - len(ship)) > num_ships_list[len(ship)-1]
 
 
