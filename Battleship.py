@@ -565,6 +565,14 @@ def draw_hit_blocks(hit_blocks_to_draw_from):
 
 
 def show_message_at_rect_center(text, rect, which_font=font, color=RED):
+    """
+    Prints message to screen at a given rect's center.
+    Args:
+        text (str): Message to print
+        rect (tuple): rectangle in (x_start, y_start, width, height) format
+        which_font (pygame font object, optional): What font to use to print message. Defaults to font.
+        color (tuple, optional): Color of the message. Defaults to RED.
+    """
     text_width, text_height = which_font.size(text)
     text_rect = pygame.Rect(rect)
     x_start = text_rect.centerx - text_width / 2
