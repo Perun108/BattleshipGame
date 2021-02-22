@@ -701,6 +701,7 @@ def main():
                 game_over = True
             elif undo_button.rect.collidepoint(mouse) and event.type == pygame.MOUSEBUTTONDOWN:
                 if human_ships_to_draw:
+                    screen.fill(WHITE, message_rect_for_drawing_ships)
                     deleted_ship = human_ships_to_draw.pop()
                     num_ships_list[len(deleted_ship) - 1] -= 1
                     what_to_do_with_used_blocks = used_blocks_for_manual_drawing.discard
