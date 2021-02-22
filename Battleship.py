@@ -612,15 +612,11 @@ def check_ships_numbers(ship, num_ships_list):
     return (5 - len(ship)) > num_ships_list[len(ship)-1]
 
 
-def update_used_blocks(ship, used_blocks_set, add_blocks=True):
+def update_used_blocks(ship, used_blocks_set, method):
     for block in ship:
         for i in range(-1, 2):
             for j in range(-1, 2):
-                new_block = block[0]+i, block[1]+j
-                if add_blocks:
-                    used_blocks_set.add(new_block)
-                else:
-                    used_blocks_set.discard(new_block)
+                method((block[0]+i, block[1]+j))
     return used_blocks_set
 
 
@@ -707,8 +703,9 @@ def main():
                 if human_ships_to_draw:
                     deleted_ship = human_ships_to_draw.pop()
                     num_ships_list[len(deleted_ship) - 1] -= 1
-                    used_blocks_for_manual_drawing = update_used_blocks(
-                        deleted_ship, used_blocks_for_manual_drawing, False)
+                    what_to_do_with_used_blocks = used_blocks_for_manual_drawing.discard
+                    update_used_blocks(
+                        deleted_ship, used_blocks_for_manual_drawing, what_to_do_with_used_blocks)
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 drawing = True
                 x_start, y_start = event.pos
@@ -750,8 +747,9 @@ def main():
                             num_ships_list[len(temp_ship) - 1] += 1
                             human_ships_to_draw.append(temp_ship)
                             human_ships_set |= temp_ship_set
+                            what_to_do_with_used_blocks = used_blocks_for_manual_drawing.add
                             used_blocks_for_manual_drawing = update_used_blocks(
-                                temp_ship, used_blocks_for_manual_drawing, True)
+                                temp_ship, used_blocks_for_manual_drawing, what_to_do_with_used_blocks)
                         else:
                             show_message_at_rect_center(
                                 f"УЖЕ ДОСТАТОЧНО {len(temp_ship)}-ПАЛУБНЫХ КОРАБЛЕЙ", message_rect_for_drawing_ships)
