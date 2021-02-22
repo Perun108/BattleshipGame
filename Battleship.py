@@ -612,12 +612,11 @@ def check_ships_numbers(ship, num_ships_list):
     return (5 - len(ship)) > num_ships_list[len(ship)-1]
 
 
-def update_used_blocks(ship, used_blocks_set, method):
+def update_used_blocks(ship, method):
     for block in ship:
         for i in range(-1, 2):
             for j in range(-1, 2):
                 method((block[0]+i, block[1]+j))
-    return used_blocks_set
 
 
 computer = AutoShips(0)
@@ -706,7 +705,7 @@ def main():
                     num_ships_list[len(deleted_ship) - 1] -= 1
                     what_to_do_with_used_blocks = used_blocks_for_manual_drawing.discard
                     update_used_blocks(
-                        deleted_ship, used_blocks_for_manual_drawing, what_to_do_with_used_blocks)
+                        deleted_ship, what_to_do_with_used_blocks)
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 drawing = True
                 x_start, y_start = event.pos
@@ -749,8 +748,8 @@ def main():
                             human_ships_to_draw.append(temp_ship)
                             human_ships_set |= temp_ship_set
                             what_to_do_with_used_blocks = used_blocks_for_manual_drawing.add
-                            used_blocks_for_manual_drawing = update_used_blocks(
-                                temp_ship, used_blocks_for_manual_drawing, what_to_do_with_used_blocks)
+                            update_used_blocks(
+                                temp_ship, what_to_do_with_used_blocks)
                         else:
                             show_message_at_rect_center(
                                 f"УЖЕ ДОСТАТОЧНО {len(temp_ship)}-ПАЛУБНЫХ КОРАБЛЕЙ", message_rect_for_drawing_ships)
