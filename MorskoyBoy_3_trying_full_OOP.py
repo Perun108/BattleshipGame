@@ -599,16 +599,11 @@ def ship_is_valid(ship_set, blocks_for_manual_drawing):
     return ship_set.isdisjoint(blocks_for_manual_drawing)
 
 
-def update_used_blocks(ship, used_blocks_set, , add_blocks=True):
+def update_used_blocks(ship, method):
     for block in ship:
         for i in range(-1, 2):
             for j in range(-1, 2):
-                new_block = block[0]+i, block[1]+j
-                if add_blocks:
-                    used_blocks_set.add(new_block)
-                else:
-                    used_blocks_set.discard(new_block)
-    return used_blocks_set
+                method((block[0]+i, block[1]+j))
 
 
 def restore_used_blocks(deleted_ship, used_blocks_set):
@@ -731,11 +726,12 @@ def main():
             elif undo_button.rect.collidepoint(mouse) and event.type == pygame.MOUSEBUTTONDOWN:
                 print("Undo clicked!")
                 if human_ships_to_draw:
+                    screen.fill(WHITE, message_rect_for_drawing_ships)
                     deleted_ship = human_ships_to_draw.pop()
                     num_ships_list[len(deleted_ship)-1] -= 1
-                    used_blocks_for_manual_drawing = update_used_blocks(
-                        deleted_ship, used_blocks_for_manual_drawing, False)
-                    screen.fill(WHITE, message_rect_for_drawing_ships)
+                    what_to_do_with_used_blocks = used_blocks_for_manual_drawing.discard
+                    update_used_blocks(
+                        deleted_ship, what_to_do_with_used_blocks)
                 print(num_ships_list)
                 print(human_ships_to_draw)
 
@@ -791,8 +787,9 @@ def main():
                             print(human_ships_to_draw)
                             human_ships_set |= temp_ship_set
                             print(human_ships_set)
-                            used_blocks_for_manual_drawing = update_used_blocks(
-                                temp_ship, used_blocks_for_manual_drawing, True)
+                            what_to_do_with_used_blocks = used_blocks_for_manual_drawing.add
+                            update_used_blocks(
+                                temp_ship, what_to_do_with_used_blocks)
                         else:
                             show_message_at_rect_center(
                                 f"There already are enough of {len(temp_ship)} ships!", message_rect_for_drawing_ships)
