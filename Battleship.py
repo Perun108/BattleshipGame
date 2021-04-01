@@ -786,7 +786,14 @@ def main():
                                    (y - upper_margin) // block_size + 1)
                     computer_turn = not check_hit_or_miss(fired_block, computer_ships_working, False, computer.ships,
                                                           computer.ships_set)
-
+                    draw_from_dotted_set(dotted_set)
+                    draw_hit_blocks(hit_blocks)
+                    screen.fill(WHITE, message_rect_computer)
+                    show_message_at_rect_center(
+                        f"Ваш последний ход: {LETTERS[fired_block[0]-1] + str(fired_block[1])}", message_rect_computer, color=BLACK)
+                else:
+                    show_message_at_rect_center(
+                        "ВЫСТРЕЛ ЗА ПРЕДЕЛЫ СЕТКИ!", message_rect_computer)
         if computer_turn:
             set_to_shoot_from = computer_available_to_fire_set
             if around_last_computer_hit_set:
