@@ -674,8 +674,8 @@ def main():
                 print("Clicked AUTO!", event.pos)
                 human = AutoShips(15)
                 human_ships_to_draw = human.ships
-                human_ships_set = human.ships_set
                 human_ships_working = copy.deepcopy(human.ships)
+                human_ships_set = human.ships_set
                 ships_creation_not_decided = False
                 ships_not_created = False
             elif event.type == pygame.MOUSEBUTTONDOWN and manual_button.rect.collidepoint(mouse):
