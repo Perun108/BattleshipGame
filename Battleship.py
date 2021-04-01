@@ -770,6 +770,7 @@ def main():
         pygame.display.update()
 
     while not game_over:
+        draw_ships(destroyed_computer_ships)
         draw_ships(human_ships_to_draw)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
