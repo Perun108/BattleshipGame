@@ -753,9 +753,8 @@ def main():
                             num_ships_list[len(temp_ship) - 1] += 1
                             human_ships_to_draw.append(temp_ship)
                             human_ships_set |= temp_ship_set
-                            what_to_do_with_used_blocks = used_blocks_for_manual_drawing.add
                             update_used_blocks(
-                                temp_ship, what_to_do_with_used_blocks)
+                                temp_ship, used_blocks_for_manual_drawing.add)
                         else:
                             show_message_at_rect_center(
                                 f"УЖЕ ДОСТАТОЧНО {len(temp_ship)}-ПАЛУБНЫХ КОРАБЛЕЙ", message_rect_for_drawing_ships)
