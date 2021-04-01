@@ -772,6 +772,9 @@ def main():
     while not game_over:
         draw_ships(destroyed_computer_ships)
         draw_ships(human_ships_to_draw)
+        if not (dotted_set | hit_blocks):
+            show_message_at_rect_center(
+                "ИГРА НАЧАЛАСЬ! ВАШ ХОД!", message_rect_computer)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_over = True
