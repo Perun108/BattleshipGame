@@ -800,7 +800,7 @@ def main():
                 set_to_shoot_from = around_last_computer_hit_set
             fired_block = computer_shoots(set_to_shoot_from)
             computer_turn = check_hit_or_miss(
-                fired_block, human_ships_working, True, human.ships, human.ships_set)
+                fired_block, human_ships_working, True, human_ships_to_draw, human_ships_set)
 
         draw_from_dotted_set(dotted_set)
         draw_hit_blocks(hit_blocks)
