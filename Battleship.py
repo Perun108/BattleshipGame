@@ -23,6 +23,9 @@ pygame.display.set_caption("МОРСКОЙ БОЙ")
 # This ratio is purely for scaling the font according to the block size
 font_size = int(block_size / 1.5)
 font = pygame.font.SysFont('notosans', font_size)
+game_over_font_size = 3 * block_size
+game_over_font = pygame.font.SysFont('notosans', game_over_font_size)
+
 
 ### COMPUTER DATA ###
 computer_available_to_fire_set = {(x, y)
