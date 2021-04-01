@@ -26,7 +26,6 @@ font = pygame.font.SysFont('notosans', font_size)
 game_over_font_size = 3 * block_size
 game_over_font = pygame.font.SysFont('notosans', game_over_font_size)
 
-
 ### COMPUTER DATA ###
 computer_available_to_fire_set = {(x, y)
                                   for x in range(16, 26) for y in range(1, 11)}
@@ -650,6 +649,11 @@ def main():
         0, upper_margin + 11 * block_size, size[0], 5 * block_size)
     message_rect_for_drawing_ships = (undo_button.rect_for_draw[0] + undo_button.rect_for_draw[2], upper_margin + 11 * block_size, size[0]-(
         undo_button.rect_for_draw[0] + undo_button.rect_for_draw[2]), 4 * block_size)
+    message_rect_computer = (left_margin - 2 * block_size, upper_margin +
+                             11 * block_size, 14 * block_size, 4 * block_size)
+    message_rect_human = (left_margin + 15 * block_size, upper_margin +
+                          11 * block_size, 10 * block_size, 4 * block_size)
+
     human_ships_to_draw = []
     human_ships_set = set()
     used_blocks_for_manual_drawing = set()
