@@ -710,9 +710,8 @@ def main():
                     screen.fill(WHITE, message_rect_for_drawing_ships)
                     deleted_ship = human_ships_to_draw.pop()
                     num_ships_list[len(deleted_ship) - 1] -= 1
-                    what_to_do_with_used_blocks = used_blocks_for_manual_drawing.discard
                     update_used_blocks(
-                        deleted_ship, what_to_do_with_used_blocks)
+                        deleted_ship, used_blocks_for_manual_drawing.discard)
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 drawing = True
                 x_start, y_start = event.pos
