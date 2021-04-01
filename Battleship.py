@@ -801,10 +801,17 @@ def main():
             fired_block = computer_shoots(set_to_shoot_from)
             computer_turn = check_hit_or_miss(
                 fired_block, human_ships_working, True, human_ships_to_draw, human_ships_set)
-
         draw_from_dotted_set(dotted_set)
         draw_hit_blocks(hit_blocks)
-        draw_ships(destroyed_computer_ships)
+        screen.fill(WHITE, message_rect_human)
+        show_message_at_rect_center(
+            f"ПОСЛЕДНИЙ ХОД КОМПЬЮТЕРА: {LETTERS[fired_block[0] - 16] + str(fired_block[1])}", message_rect_human, color=BLACK)
+        if not computer.ships_set:
+            show_message_at_rect_center(
+                "ВЫ ВЫИГРАЛИ!", (0, 0, size[0], size[1]), game_over_font)
+        if not human_ships_set:
+            show_message_at_rect_center(
+                "ВЫ ПРОИГРАЛИ!", (0, 0, size[0], size[1]), game_over_font)
         pygame.display.update()
 
 
