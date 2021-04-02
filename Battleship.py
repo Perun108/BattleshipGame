@@ -677,7 +677,6 @@ def main():
                 ships_not_created = False
             # If AUTO button is pressed - create human ships automatically
             elif event.type == pygame.MOUSEBUTTONDOWN and auto_button.rect.collidepoint(mouse):
-                print("Clicked AUTO!", event.pos)
                 human = AutoShips(15)
                 human_ships_to_draw = human.ships
                 human_ships_working = copy.deepcopy(human.ships)
@@ -692,8 +691,8 @@ def main():
 
     while ships_not_created:
         screen.fill(WHITE, rect_for_grids)
-        computer_grid = Grid("КОМПЬЮТЕР", 0)
-        human_grid = Grid("ЧЕЛОВЕК", 15)
+        computer_grid = Grid("COMPUTER", 0)
+        human_grid = Grid("HUMAN", 15)
         undo_button.draw_button()
         undo_button.print_message_for_button()
         undo_button.change_color_on_hover()
@@ -741,10 +740,10 @@ def main():
                             temp_ship.append((block, start_block[1]))
                     else:
                         show_message_at_rect_center(
-                            "КОРАБЛЬ СЛИШКОМ БОЛЬШОЙ!", message_rect_for_drawing_ships)
+                            "SHIP IS TOO LARGE! Try again!", message_rect_for_drawing_ships)
                 else:
                     show_message_at_rect_center(
-                        "КОРАБЛЬ ЗА ПРЕДЕЛАМИ СЕТКИ!", message_rect_for_drawing_ships)
+                        "SHIP IS BEYOND YOUR GRID! Try again!", message_rect_for_drawing_ships)
                 if temp_ship:
                     temp_ship_set = set(temp_ship)
                     if ship_is_valid(temp_ship_set, used_blocks_for_manual_drawing):
@@ -756,10 +755,10 @@ def main():
                                 temp_ship, used_blocks_for_manual_drawing.add)
                         else:
                             show_message_at_rect_center(
-                                f"УЖЕ ДОСТАТОЧНО {len(temp_ship)}-ПАЛУБНЫХ КОРАБЛЕЙ", message_rect_for_drawing_ships)
+                                f"There already are enough of {len(temp_ship)} ships!", message_rect_for_drawing_ships)
                     else:
                         show_message_at_rect_center(
-                            "КОРАБЛИ ПРИКАСАЮТСЯ!", message_rect_for_drawing_ships)
+                            "SHIPS ARE TOUCHING! Try again", message_rect_for_drawing_ships)
             if len(human_ships_to_draw) == 10:
                 ships_not_created = False
                 human_ships_working = copy.deepcopy(human_ships_to_draw)
@@ -773,7 +772,7 @@ def main():
         draw_ships(human_ships_to_draw)
         if not (dotted_set | hit_blocks):
             show_message_at_rect_center(
-                "ИГРА НАЧАЛАСЬ! ВАШ ХОД!", message_rect_computer)
+                "GAME STARTED! YOUR MOVE!", message_rect_computer)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_over = True
@@ -789,10 +788,10 @@ def main():
                     draw_hit_blocks(hit_blocks)
                     screen.fill(WHITE, message_rect_computer)
                     show_message_at_rect_center(
-                        f"Ваш последний ход: {LETTERS[fired_block[0]-1] + str(fired_block[1])}", message_rect_computer, color=BLACK)
+                        f"Your last shot: {LETTERS[fired_block[0]-1] + str(fired_block[1])}", message_rect_computer, color=BLACK)
                 else:
                     show_message_at_rect_center(
-                        "ВЫСТРЕЛ ЗА ПРЕДЕЛЫ СЕТКИ!", message_rect_computer)
+                        "Your shot is outside of grid! Try again", message_rect_computer)
         if computer_turn:
             set_to_shoot_from = computer_available_to_fire_set
             if around_last_computer_hit_set:
@@ -804,13 +803,13 @@ def main():
         draw_hit_blocks(hit_blocks)
         screen.fill(WHITE, message_rect_human)
         show_message_at_rect_center(
-            f"ПОСЛЕДНИЙ ХОД КОМПЬЮТЕРА: {LETTERS[fired_block[0] - 16] + str(fired_block[1])}", message_rect_human, color=BLACK)
+            f"Computer's last shot: {LETTERS[fired_block[0] - 16] + str(fired_block[1])}", message_rect_human, color=BLACK)
         if not computer.ships_set:
             show_message_at_rect_center(
-                "ВЫ ВЫИГРАЛИ!", (0, 0, size[0], size[1]), game_over_font)
+                "YOU WON!", (0, 0, size[0], size[1]), game_over_font)
         if not human_ships_set:
             show_message_at_rect_center(
-                "ВЫ ПРОИГРАЛИ!", (0, 0, size[0], size[1]), game_over_font)
+                "YOU LOST!", (0, 0, size[0], size[1]), game_over_font)
         pygame.display.update()
 
 
