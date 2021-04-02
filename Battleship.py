@@ -625,13 +625,13 @@ computer_ships_working = copy.deepcopy(computer.ships)
 
 auto_button_place = left_margin + 17 * block_size
 manual_button_place = left_margin + 20 * block_size
-how_to_create_ships_message = "Как вы хотите создать корабли? Нажмите кнопку"
-auto_button = Button(auto_button_place, "АВТО", how_to_create_ships_message)
-manual_button = Button(manual_button_place, "ВРУЧНУЮ",
+how_to_create_ships_message = "How do you want to create your ships? Click the button"
+auto_button = Button(auto_button_place, "AUTO", how_to_create_ships_message)
+manual_button = Button(manual_button_place, "MANUAL",
                        how_to_create_ships_message)
-undo_message = "Для отмены последнего корабля нажмите кнопку"
+undo_message = "To undo the last ship click the button"
 undo_button_place = left_margin + 12 * block_size
-undo_button = Button(undo_button_place, "ОТМЕНА", undo_message)
+undo_button = Button(undo_button_place, "UNDO LAST SHIP", undo_message)
 
 
 def main():
