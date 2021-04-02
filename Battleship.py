@@ -659,8 +659,8 @@ def main():
     num_ships_list = [0, 0, 0, 0]
 
     screen.fill(WHITE)
-    computer_grid = Grid("КОМПЬЮТЕР", 0)
-    human_grid = Grid("ЧЕЛОВЕК", 15)
+    computer_grid = Grid("COMPUTER", 0)
+    human_grid = Grid("HUMAN", 15)
 
     while ships_creation_not_decided:
         auto_button.draw_button()
