@@ -18,7 +18,7 @@ LETTERS = "ABCDEFGHIJ"
 pygame.init()
 
 screen = pygame.display.set_mode(size)
-pygame.display.set_caption("МОРСКОЙ БОЙ")
+pygame.display.set_caption("BATTLESHIP")
 # This ratio is purely for scaling the font according to the block size
 font_size = int(block_size / 1.5)
 font = pygame.font.SysFont('notosans', font_size)
