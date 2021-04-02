@@ -13,7 +13,6 @@ left_margin = 5 * block_size
 upper_margin = 2 * block_size
 # 30 = 2x10 blocks width in two grids + hard-coded 5*blocks gap after each grid!
 size = (left_margin + 30 * block_size, upper_margin + 15 * block_size)
-# LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
 LETTERS = "ABCDEFGHIJ"
 
 pygame.init()
