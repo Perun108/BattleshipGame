@@ -621,9 +621,11 @@ def update_used_blocks(ship, method):
                 method((block[0]+i, block[1]+j))
 
 
+# Create computer ships
 computer = AutoShips(0)
 computer_ships_working = copy.deepcopy(computer.ships)
 
+# Create AUTO and MANUAL buttons and explanatory message for them
 auto_button_place = left_margin + 17 * block_size
 manual_button_place = left_margin + 20 * block_size
 how_to_create_ships_message = "How do you want to create your ships? Click the button"
