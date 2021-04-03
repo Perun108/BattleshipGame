@@ -638,6 +638,7 @@ undo_message = "To undo the last ship click the button"
 undo_button_place = left_margin + 12 * block_size
 undo_button = Button(undo_button_place, "UNDO LAST SHIP", undo_message)
 
+# Create PLAY AGAIN and QUIT buttons and message for them
 play_again_message = "Do you want to play again or quit?"
 play_again_button = Button(
     left_margin + 15 * block_size, "PLAY AGAIN", play_again_message)
