@@ -1,4 +1,5 @@
 import pygame
+import sys
 import random
 import copy
 
@@ -633,6 +634,11 @@ undo_message = "To undo the last ship click the button"
 undo_button_place = left_margin + 12 * block_size
 undo_button = Button(undo_button_place, "UNDO LAST SHIP", undo_message)
 
+play_again_message = "Do you want to play again or quit?"
+play_again_button = Button(
+    left_margin + 15 * block_size, "PLAY AGAIN", play_again_message)
+quit_game_button = Button(manual_button_place, "QUIT", play_again_message)
+
 
 def main():
     ships_creation_not_decided = True
@@ -799,19 +805,40 @@ def main():
             fired_block = computer_shoots(set_to_shoot_from)
             computer_turn = check_hit_or_miss(
                 fired_block, human_ships_working, True, human_ships_to_draw, human_ships_set)
-        draw_from_dotted_set(dotted_set)
-        draw_hit_blocks(hit_blocks)
-        screen.fill(WHITE, message_rect_human)
-        show_message_at_rect_center(
-            f"Computer's last shot: {LETTERS[fired_block[0] - 16] + str(fired_block[1])}", message_rect_human, color=BLACK)
+            draw_from_dotted_set(dotted_set)
+            draw_hit_blocks(hit_blocks)
+            screen.fill(WHITE, message_rect_human)
+            show_message_at_rect_center(
+                f"Computer's last shot: {LETTERS[fired_block[0] - 16] + str(fired_block[1])}", message_rect_human, color=BLACK)
         if not computer.ships_set:
             show_message_at_rect_center(
                 "YOU WON!", (0, 0, size[0], size[1]), game_over_font)
+            game_over = True
         if not human_ships_set:
             show_message_at_rect_center(
                 "YOU LOST!", (0, 0, size[0], size[1]), game_over_font)
+            game_over = True
+        pygame.display.update()
+
+    while game_over:
+        screen.fill(WHITE, rect_for_messages_and_buttons)
+        play_again_button.draw_button()
+        play_again_button.print_message_for_button()
+        play_again_button.change_color_on_hover()
+        quit_game_button.draw_button()
+        quit_game_button.change_color_on_hover()
+
+        mouse = pygame.mouse.get_pos()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN and play_again_button.rect.collidepoint(mouse):
+                main()
+            elif event.type == pygame.MOUSEBUTTONDOWN and quit_game_button.rect.collidepoint(mouse):
+                pygame.quit()
+                sys.exit()
         pygame.display.update()
 
 
 main()
-pygame.quit()
