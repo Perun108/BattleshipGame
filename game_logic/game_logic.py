@@ -16,6 +16,9 @@ hit_blocks = set()
 dotted_set = set()
 destroyed_computer_ships = []
 
+human_destroyed_ships_count = {4: 0, 3: 0, 2: 0, 1: 0}
+computer_destroyed_ships_count = {4: 0, 3: 0, 2: 0, 1: 0}
+
 
 def computer_shoots() -> tuple:
     """
@@ -115,6 +118,10 @@ def update_destroyed_ships(
             computer_turn=computer_turn,
             diagonal_only=False,
         )
+    if computer_turn:
+        human_destroyed_ships_count[len(ship)] += 1
+    else:
+        computer_destroyed_ships_count[len(ship)] += 1
 
 
 def update_around_last_computer_hit(

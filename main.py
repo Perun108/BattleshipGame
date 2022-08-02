@@ -9,6 +9,7 @@ from drawings.drawing import (
     draw_from_dotted_set,
     draw_hit_blocks,
     draw_ships,
+    print_destroyed_ships_count,
     show_message_at_rect_center,
 )
 from drawings.manual_ships import manually_create_new_ship
@@ -27,7 +28,9 @@ from game_elements.constants import (
     MESSAGE_RECT_HUMAN,
     PLAY_AGAIN_BUTTON_PLACE,
     PLAY_AGAIN_MESSAGE,
+    RECT_FOR_COMPUTER_SHIPS_COUNT,
     RECT_FOR_GRIDS,
+    RECT_FOR_HUMAN_SHIPS_COUNT,
     RECT_FOR_MESSAGES_AND_BUTTONS,
     SIZE,
     UNDO_BUTTON_PLACE,
@@ -51,6 +54,11 @@ from game_logic.game_logic import (
 pygame.init()
 
 screen = pygame.display.set_mode(SIZE)
+pygame.display.set_caption("BattleShip")
+
+icon = pygame.image.load("media/BattleShip.png")
+pygame.display.set_icon(icon)
+
 font = pygame.font.SysFont("notosans", FONT_SIZE)
 game_over_font = pygame.font.SysFont("notosans", GAME_OVER_FONT_SIZE)
 
@@ -165,6 +173,8 @@ def main():
         pygame.display.update()
 
     while not game_over:
+        screen.fill(WHITE, RECT_FOR_HUMAN_SHIPS_COUNT)
+        screen.fill(WHITE, RECT_FOR_COMPUTER_SHIPS_COUNT)
         if not (dotted_set | hit_blocks):
             show_message_at_rect_center("GAME STARTED! YOUR MOVE!", MESSAGE_RECT_COMPUTER)
         for event in pygame.event.get():
@@ -196,7 +206,6 @@ def main():
                 else:
                     show_message_at_rect_center("Your shot is outside of grid! Try again", MESSAGE_RECT_COMPUTER)
         if computer_turn:
-
             fired_block = computer_shoots()
             computer_turn = check_hit_or_miss(
                 fired_block=fired_block,
@@ -216,6 +225,7 @@ def main():
             )
         draw_ships(destroyed_computer_ships)
         draw_ships(human_ships_to_draw)
+
         # draw_ships(computer.ships)
         if not computer.ships_set:
             show_message_at_rect_center("YOU WON!", (0, 0, SIZE[0], SIZE[1]), game_over_font)
@@ -223,6 +233,8 @@ def main():
         if not human_ships_set:
             show_message_at_rect_center("YOU LOST!", (0, 0, SIZE[0], SIZE[1]), game_over_font)
             game_over = True
+
+        print_destroyed_ships_count(font)
         pygame.display.update()
 
     while game_over:
