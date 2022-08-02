@@ -56,7 +56,7 @@ def check_hit_or_miss(
                 dotted_set=dotted_set,
             )
             elem.remove(fired_block)
-            # This is to check who loses - if ships_set is empty
+            # This is to check who lost - if ships_set is empty
             opponents_ships_set.discard(fired_block)
             if computer_turn:
                 last_hits_list.append(fired_block)
@@ -208,6 +208,7 @@ def computer_hits_twice(
                 new_around_last_hit_set.add((x1 - 1, y1))
             if x2 < 25:
                 new_around_last_hit_set.add((x2 + 1, y1))
+    print(new_around_last_hit_set)
     return new_around_last_hit_set
 
 
@@ -244,6 +245,8 @@ def update_dotted_and_hit_sets(
                     dotted_set_for_computer_not_to_shoot=dotted_set_for_computer_not_to_shoot,
                 )
     dotted_set -= hit_blocks
+    print("dotted_set", dotted_set)
+    print("hit_blocks", hit_blocks)
 
 
 def add_missed_block_to_dotted_set(

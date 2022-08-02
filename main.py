@@ -1,7 +1,13 @@
 import copy
+import logging
 import sys
 
 import pygame
+
+logging.basicConfig(
+    filename="battleship.log", filemode="w", format="%(name)s - %(levelname)s - %(message)s", level=logging.INFO
+)
+logging.warning("This will get logged to a file")
 
 from drawings import Grid
 from drawings.button import Button
@@ -11,6 +17,7 @@ from drawings.drawing import (
     draw_ships,
     show_message_at_rect_center,
 )
+from drawings.manual_ships import manually_create_new_ship
 from game_elements.constants import (
     AUTO_BUTTON_PLACE,
     BLACK,
@@ -30,18 +37,11 @@ from game_elements.constants import (
     RECT_FOR_MESSAGES_AND_BUTTONS,
     SIZE,
     UNDO_BUTTON_PLACE,
-    UNDO_MESSAGE,
     UPPER_MARGIN,
     WHITE,
 )
 from game_elements.random_ships import AutoShips
-from game_logic.game_logic import (
-    check_hit_or_miss,
-    computer_shoots,
-    is_ship_valid,
-    update_used_blocks,
-    validate_ships_numbers,
-)
+from game_logic.game_logic import check_hit_or_miss, computer_shoots, update_used_blocks
 
 pygame.init()
 
@@ -71,19 +71,11 @@ auto_button = Button(AUTO_BUTTON_PLACE, "AUTO", HOW_TO_CREATE_SHIPS_MESSAGE, fon
 manual_button = Button(MANUAL_BUTTON_PLACE, "MANUAL", HOW_TO_CREATE_SHIPS_MESSAGE, font)
 
 # Create UNDO message and button
-undo_button = Button(UNDO_BUTTON_PLACE, "UNDO LAST SHIP", UNDO_MESSAGE, font)
+undo_button = Button(UNDO_BUTTON_PLACE, "UNDO LAST SHIP", "", font)
 
 # Create PLAY AGAIN and QUIT buttons and message for them
 play_again_button = Button(PLAY_AGAIN_BUTTON_PLACE, "PLAY AGAIN", PLAY_AGAIN_MESSAGE, font)
 quit_game_button = Button(MANUAL_BUTTON_PLACE, "QUIT", PLAY_AGAIN_MESSAGE, font)
-
-
-MESSAGE_RECT_FOR_DRAWING_SHIPS = (
-    undo_button.rect_for_draw[0] + undo_button.rect_for_draw[2],
-    UPPER_MARGIN + 11 * BLOCK_SIZE,
-    SIZE[0] - (undo_button.rect_for_draw[0] + undo_button.rect_for_draw[2]),
-    4 * BLOCK_SIZE,
-)
 
 
 def main():
@@ -114,9 +106,8 @@ def main():
         mouse = pygame.mouse.get_pos()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                game_over = True
-                ships_creation_not_decided = False
-                ships_not_created = False
+                pygame.quit()
+                sys.exit()
             # If AUTO button is pressed - create human ships automatically
             elif event.type == pygame.MOUSEBUTTONDOWN and auto_button.rect.collidepoint(mouse):
                 human = AutoShips(15)
@@ -143,11 +134,11 @@ def main():
             undo_button.draw(LIGHT_GRAY)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                ships_not_created = False
-                game_over = True
+                pygame.quit()
+                sys.exit()
             elif undo_button.rect.collidepoint(mouse) and event.type == pygame.MOUSEBUTTONDOWN:
                 if human_ships_to_draw:
-                    screen.fill(WHITE, MESSAGE_RECT_FOR_DRAWING_SHIPS)
+                    screen.fill(WHITE, RECT_FOR_MESSAGES_AND_BUTTONS)
                     deleted_ship = human_ships_to_draw.pop()
                     num_ships_list[len(deleted_ship) - 1] -= 1
                     update_used_blocks(ship=deleted_ship, method=used_blocks_for_manual_drawing.discard)
@@ -164,42 +155,16 @@ def main():
                 x_end, y_end = event.pos
                 drawing = False
                 ship_size = (0, 0)
-                start_block = ((x_start - LEFT_MARGIN) // BLOCK_SIZE + 1, (y_start - UPPER_MARGIN) // BLOCK_SIZE + 1)
-                end_block = ((x_end - LEFT_MARGIN) // BLOCK_SIZE + 1, (y_end - UPPER_MARGIN) // BLOCK_SIZE + 1)
-                if start_block > end_block:
-                    start_block, end_block = end_block, start_block
-                temp_ship = []
-                if (
-                    15 < start_block[0] < 26
-                    and 0 < start_block[1] < 11
-                    and 15 < end_block[0] < 26
-                    and 0 < end_block[1] < 11
-                ):
-                    screen.fill(WHITE, MESSAGE_RECT_FOR_DRAWING_SHIPS)
-                    if start_block[0] == end_block[0] and (end_block[1] - start_block[1]) < 4:
-                        for block in range(start_block[1], end_block[1] + 1):
-                            temp_ship.append((start_block[0], block))
-                    elif start_block[1] == end_block[1] and (end_block[0] - start_block[0]) < 4:
-                        for block in range(start_block[0], end_block[0] + 1):
-                            temp_ship.append((block, start_block[1]))
-                    else:
-                        show_message_at_rect_center("SHIP IS TOO LARGE! Try again!", MESSAGE_RECT_FOR_DRAWING_SHIPS)
-                else:
-                    show_message_at_rect_center("SHIP IS BEYOND YOUR GRID! Try again!", MESSAGE_RECT_FOR_DRAWING_SHIPS)
-                if temp_ship:
-                    temp_ship_set = set(temp_ship)
-                    if is_ship_valid(ship_set=temp_ship_set, blocks_for_manual_drawing=used_blocks_for_manual_drawing):
-                        if validate_ships_numbers(ship=temp_ship, num_ships_list=num_ships_list):
-                            num_ships_list[len(temp_ship) - 1] += 1
-                            human_ships_to_draw.append(temp_ship)
-                            human_ships_set |= temp_ship_set
-                            update_used_blocks(ship=temp_ship, method=used_blocks_for_manual_drawing.add)
-                        else:
-                            show_message_at_rect_center(
-                                f"There already are enough of {len(temp_ship)} ships!", MESSAGE_RECT_FOR_DRAWING_SHIPS
-                            )
-                    else:
-                        show_message_at_rect_center("SHIPS ARE TOUCHING! Try again", MESSAGE_RECT_FOR_DRAWING_SHIPS)
+                manually_create_new_ship(
+                    human_ships_to_draw=human_ships_to_draw,
+                    human_ships_set=human_ships_set,
+                    used_blocks_for_manual_drawing=used_blocks_for_manual_drawing,
+                    num_ships_list=num_ships_list,
+                    x_start=x_start,
+                    y_start=y_start,
+                    x_end=x_end,
+                    y_end=y_end,
+                )
             if len(human_ships_to_draw) == 10:
                 ships_not_created = False
                 human_ships_working = copy.deepcopy(human_ships_to_draw)
@@ -215,22 +180,24 @@ def main():
             show_message_at_rect_center("GAME STARTED! YOUR MOVE!", MESSAGE_RECT_COMPUTER)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                game_over = True
+                pygame.quit()
+                sys.exit()
             elif not computer_turn and event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = event.pos
                 if (LEFT_MARGIN < x < LEFT_MARGIN + 10 * BLOCK_SIZE) and (
                     UPPER_MARGIN < y < UPPER_MARGIN + 10 * BLOCK_SIZE
                 ):
                     fired_block = ((x - LEFT_MARGIN) // BLOCK_SIZE + 1, (y - UPPER_MARGIN) // BLOCK_SIZE + 1)
+                    logging.info(f"Human shot at {LETTERS[fired_block[0]-1] + str(fired_block[1])}")
                     computer_turn = not check_hit_or_miss(
                         fired_block=fired_block,
                         opponents_ships_list=computer_ships_working,
                         computer_turn=False,
                         opponents_ships_list_original_copy=computer.ships,
                         opponents_ships_set=computer.ships_set,
-                        last_hits_list=last_hits_list,
                         destroyed_computer_ships=destroyed_computer_ships,
                         computer=computer,
+                        last_hits_list=last_hits_list,
                         around_last_computer_hit_set=around_last_computer_hit_set,
                         hit_blocks_for_computer_not_to_shoot=hit_blocks_for_computer_not_to_shoot,
                         hit_blocks=hit_blocks,
@@ -238,6 +205,15 @@ def main():
                         dotted_set_for_computer_not_to_shoot=dotted_set_for_computer_not_to_shoot,
                         dotted_set=dotted_set,
                     )
+                    logging.info(f"Dotted set is {dotted_set}")
+                    logging.info(f"Hit blocks are {hit_blocks}")
+                    logging.info(f"last_hits_list is {last_hits_list}")
+                    logging.info(f"around_last_computer_hit_set is {around_last_computer_hit_set}")
+                    logging.info(f"hit_blocks_for_computer_not_to_shoot is {hit_blocks_for_computer_not_to_shoot}")
+                    logging.info(f"computer_available_to_fire_set are {computer_available_to_fire_set}")
+                    logging.info(f"dotted_set_for_computer_not_to_shoot is {dotted_set_for_computer_not_to_shoot}")
+                    logging.info("-------------------------")
+
                     draw_from_dotted_set(dotted_set)
                     draw_hit_blocks(hit_blocks)
                     screen.fill(WHITE, MESSAGE_RECT_COMPUTER)
@@ -254,6 +230,7 @@ def main():
             fired_block = computer_shoots(
                 set_to_shoot_from=set_to_shoot_from, computer_available_to_fire_set=computer_available_to_fire_set
             )
+            logging.info(f"Computer shot at {LETTERS[fired_block[0] - 16] + str(fired_block[1])}")
             computer_turn = check_hit_or_miss(
                 fired_block=fired_block,
                 opponents_ships_list=human_ships_working,
@@ -270,6 +247,17 @@ def main():
                 dotted_set_for_computer_not_to_shoot=dotted_set_for_computer_not_to_shoot,
                 dotted_set=dotted_set,
             )
+            logging.info(f"Dotted set is {dotted_set}")
+            logging.info(f"Hit blocks are {hit_blocks}")
+            logging.info(f"Dotted set is {dotted_set}")
+            logging.info(f"Hit blocks are {hit_blocks}")
+            logging.info(f"last_hits_list is {last_hits_list}")
+            logging.info(f"set_to_shoot_from is {set_to_shoot_from}")
+            logging.info(f"hit_blocks_for_computer_not_to_shoot is {hit_blocks_for_computer_not_to_shoot}")
+            logging.info(f"computer_available_to_fire_set are {computer_available_to_fire_set}")
+            logging.info(f"dotted_set_for_computer_not_to_shoot is {dotted_set_for_computer_not_to_shoot}")
+            logging.info("-------------------------")
+
             draw_from_dotted_set(dotted_set)
             draw_hit_blocks(hit_blocks)
             screen.fill(WHITE, MESSAGE_RECT_HUMAN)
