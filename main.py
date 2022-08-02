@@ -1,13 +1,7 @@
 import copy
-import logging
 import sys
 
 import pygame
-
-logging.basicConfig(
-    filename="battleship.log", filemode="w", format="%(name)s - %(levelname)s - %(message)s", level=logging.INFO
-)
-logging.warning("This will get logged to a file")
 
 from drawings import Grid
 from drawings.button import Button
@@ -41,30 +35,24 @@ from game_elements.constants import (
     WHITE,
 )
 from game_elements.random_ships import AutoShips
-from game_logic.game_logic import check_hit_or_miss, computer_shoots, update_used_blocks
+from game_logic.game_logic import (
+    around_last_computer_hit_set,
+    check_hit_or_miss,
+    computer_shoots,
+    destroyed_computer_ships,
+    dotted_set,
+    dotted_set_for_computer_not_to_shoot,
+    hit_blocks,
+    hit_blocks_for_computer_not_to_shoot,
+    last_hits_list,
+    update_used_blocks,
+)
 
 pygame.init()
 
 screen = pygame.display.set_mode(SIZE)
 font = pygame.font.SysFont("notosans", FONT_SIZE)
 game_over_font = pygame.font.SysFont("notosans", GAME_OVER_FONT_SIZE)
-
-### COMPUTER DATA ###
-computer_available_to_fire_set = {(x, y) for x in range(16, 26) for y in range(1, 11)}
-around_last_computer_hit_set = set()
-dotted_set_for_computer_not_to_shoot = set()
-hit_blocks_for_computer_not_to_shoot = set()
-last_hits_list = []
-###################
-
-hit_blocks = set()
-dotted_set = set()
-destroyed_computer_ships = []
-
-
-# Create computer ships
-computer = AutoShips(0)
-computer_ships_working = copy.deepcopy(computer.ships)
 
 # Create AUTO and MANUAL buttons and explanatory message for them
 auto_button = Button(AUTO_BUTTON_PLACE, "AUTO", HOW_TO_CREATE_SHIPS_MESSAGE, font)
@@ -95,6 +83,9 @@ def main():
     screen.fill(WHITE)
     Grid(title="COMPUTER", offset=0, font=font, letters=LETTERS, line_color=BLACK, text_color=BLACK)
     Grid(title="HUMAN", offset=15, font=font, letters=LETTERS, line_color=BLACK, text_color=BLACK)
+    # Create computer ships
+    computer = AutoShips(0)
+    computer_ships_working = copy.deepcopy(computer.ships)
 
     while ships_creation_not_decided:
         auto_button.draw()
@@ -174,8 +165,6 @@ def main():
         pygame.display.update()
 
     while not game_over:
-        draw_ships(destroyed_computer_ships)
-        draw_ships(human_ships_to_draw)
         if not (dotted_set | hit_blocks):
             show_message_at_rect_center("GAME STARTED! YOUR MOVE!", MESSAGE_RECT_COMPUTER)
         for event in pygame.event.get():
@@ -188,31 +177,14 @@ def main():
                     UPPER_MARGIN < y < UPPER_MARGIN + 10 * BLOCK_SIZE
                 ):
                     fired_block = ((x - LEFT_MARGIN) // BLOCK_SIZE + 1, (y - UPPER_MARGIN) // BLOCK_SIZE + 1)
-                    logging.info(f"Human shot at {LETTERS[fired_block[0]-1] + str(fired_block[1])}")
                     computer_turn = not check_hit_or_miss(
                         fired_block=fired_block,
                         opponents_ships_list=computer_ships_working,
                         computer_turn=False,
                         opponents_ships_list_original_copy=computer.ships,
                         opponents_ships_set=computer.ships_set,
-                        destroyed_computer_ships=destroyed_computer_ships,
                         computer=computer,
-                        last_hits_list=last_hits_list,
-                        around_last_computer_hit_set=around_last_computer_hit_set,
-                        hit_blocks_for_computer_not_to_shoot=hit_blocks_for_computer_not_to_shoot,
-                        hit_blocks=hit_blocks,
-                        computer_available_to_fire_set=computer_available_to_fire_set,
-                        dotted_set_for_computer_not_to_shoot=dotted_set_for_computer_not_to_shoot,
-                        dotted_set=dotted_set,
                     )
-                    logging.info(f"Dotted set is {dotted_set}")
-                    logging.info(f"Hit blocks are {hit_blocks}")
-                    logging.info(f"last_hits_list is {last_hits_list}")
-                    logging.info(f"around_last_computer_hit_set is {around_last_computer_hit_set}")
-                    logging.info(f"hit_blocks_for_computer_not_to_shoot is {hit_blocks_for_computer_not_to_shoot}")
-                    logging.info(f"computer_available_to_fire_set are {computer_available_to_fire_set}")
-                    logging.info(f"dotted_set_for_computer_not_to_shoot is {dotted_set_for_computer_not_to_shoot}")
-                    logging.info("-------------------------")
 
                     draw_from_dotted_set(dotted_set)
                     draw_hit_blocks(hit_blocks)
@@ -224,39 +196,16 @@ def main():
                 else:
                     show_message_at_rect_center("Your shot is outside of grid! Try again", MESSAGE_RECT_COMPUTER)
         if computer_turn:
-            set_to_shoot_from = computer_available_to_fire_set
-            if around_last_computer_hit_set:
-                set_to_shoot_from = around_last_computer_hit_set
-            fired_block = computer_shoots(
-                set_to_shoot_from=set_to_shoot_from, computer_available_to_fire_set=computer_available_to_fire_set
-            )
-            logging.info(f"Computer shot at {LETTERS[fired_block[0] - 16] + str(fired_block[1])}")
+
+            fired_block = computer_shoots()
             computer_turn = check_hit_or_miss(
                 fired_block=fired_block,
                 opponents_ships_list=human_ships_working,
                 computer_turn=True,
                 opponents_ships_list_original_copy=human_ships_to_draw,
                 opponents_ships_set=human_ships_set,
-                last_hits_list=last_hits_list,
-                destroyed_computer_ships=destroyed_computer_ships,
                 computer=computer,
-                around_last_computer_hit_set=around_last_computer_hit_set,
-                hit_blocks_for_computer_not_to_shoot=hit_blocks_for_computer_not_to_shoot,
-                hit_blocks=hit_blocks,
-                computer_available_to_fire_set=computer_available_to_fire_set,
-                dotted_set_for_computer_not_to_shoot=dotted_set_for_computer_not_to_shoot,
-                dotted_set=dotted_set,
             )
-            logging.info(f"Dotted set is {dotted_set}")
-            logging.info(f"Hit blocks are {hit_blocks}")
-            logging.info(f"Dotted set is {dotted_set}")
-            logging.info(f"Hit blocks are {hit_blocks}")
-            logging.info(f"last_hits_list is {last_hits_list}")
-            logging.info(f"set_to_shoot_from is {set_to_shoot_from}")
-            logging.info(f"hit_blocks_for_computer_not_to_shoot is {hit_blocks_for_computer_not_to_shoot}")
-            logging.info(f"computer_available_to_fire_set are {computer_available_to_fire_set}")
-            logging.info(f"dotted_set_for_computer_not_to_shoot is {dotted_set_for_computer_not_to_shoot}")
-            logging.info("-------------------------")
 
             draw_from_dotted_set(dotted_set)
             draw_hit_blocks(hit_blocks)
@@ -265,6 +214,9 @@ def main():
                 f"Computer's last shot: {LETTERS[fired_block[0] - 16] + str(fired_block[1])}",
                 MESSAGE_RECT_HUMAN,
             )
+        draw_ships(destroyed_computer_ships)
+        draw_ships(human_ships_to_draw)
+        # draw_ships(computer.ships)
         if not computer.ships_set:
             show_message_at_rect_center("YOU WON!", (0, 0, SIZE[0], SIZE[1]), game_over_font)
             game_over = True
@@ -287,6 +239,15 @@ def main():
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN and play_again_button.rect.collidepoint(mouse):
+                around_last_computer_hit_set.clear()
+                dotted_set_for_computer_not_to_shoot.clear()
+                hit_blocks_for_computer_not_to_shoot.clear()
+                last_hits_list.clear()
+                hit_blocks.clear()
+                dotted_set.clear()
+                destroyed_computer_ships.clear()
+                dotted_set.clear()
+                hit_blocks.clear()
                 main()
             elif event.type == pygame.MOUSEBUTTONDOWN and quit_game_button.rect.collidepoint(mouse):
                 pygame.quit()
