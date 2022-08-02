@@ -3,34 +3,50 @@ from typing import Callable
 
 from game_elements.random_ships import AutoShips
 
+### COMPUTER DATA ###
+computer_available_to_fire_set = {(x, y) for x in range(16, 26) for y in range(1, 11)}
+around_last_computer_hit_set = set()
 
-def computer_shoots(*, set_to_shoot_from: set, computer_available_to_fire_set: set) -> tuple:
+dotted_set_for_computer_not_to_shoot = set()
+hit_blocks_for_computer_not_to_shoot = set()
+last_hits_list = []
+###################
+
+hit_blocks = set()
+dotted_set = set()
+destroyed_computer_ships = []
+
+human_destroyed_ships_count = {4: 0, 3: 0, 2: 0, 1: 0}
+computer_destroyed_ships_count = {4: 0, 3: 0, 2: 0, 1: 0}
+
+
+def computer_shoots() -> tuple:
     """
     Randomly chooses a block from available to shoot from set
     """
+    # This global keyword and check for len(computer_available_to_fire_set) is solely for the play again option
+    # when all the ships and blocks variables are re-initialized but computer_available_to_fire_set is not.
+    global computer_available_to_fire_set
+    if not computer_available_to_fire_set:
+        computer_available_to_fire_set = {(x, y) for x in range(16, 26) for y in range(1, 11)}
+
+    set_to_shoot_from = computer_available_to_fire_set
+    if around_last_computer_hit_set:
+        set_to_shoot_from = around_last_computer_hit_set
     # pygame.time.delay(500)
     computer_fired_block = choice(tuple(set_to_shoot_from))
     computer_available_to_fire_set.discard(computer_fired_block)
     return computer_fired_block
 
 
-# TODO Refactor this function!!!
 def check_hit_or_miss(
     *,
     fired_block: tuple,
-    opponents_ships_list: list,
+    opponents_ships_list: list[list],
     computer_turn: bool,
     opponents_ships_list_original_copy: list,
     opponents_ships_set: set,
-    last_hits_list: list,
-    destroyed_computer_ships: list,
     computer: AutoShips,
-    around_last_computer_hit_set: set,
-    hit_blocks_for_computer_not_to_shoot: set,
-    hit_blocks: set,
-    computer_available_to_fire_set: set,
-    dotted_set_for_computer_not_to_shoot: set,
-    dotted_set: set,
 ) -> bool:
     """
     Checks whether the block that was shot at either by computer or by human is a hit or a miss.
@@ -50,34 +66,21 @@ def check_hit_or_miss(
                 fired_block=fired_block,
                 computer_turn=computer_turn,
                 diagonal_only=diagonal_only,
-                hit_blocks_for_computer_not_to_shoot=hit_blocks_for_computer_not_to_shoot,
-                hit_blocks=hit_blocks,
-                dotted_set_for_computer_not_to_shoot=dotted_set_for_computer_not_to_shoot,
-                dotted_set=dotted_set,
             )
             elem.remove(fired_block)
-            # This is to check who loses - if ships_set is empty
+            # This is to check who lost - if ships_set is empty
             opponents_ships_set.discard(fired_block)
             if computer_turn:
                 last_hits_list.append(fired_block)
                 update_around_last_computer_hit(
                     fired_block=fired_block,
                     computer_hits=True,
-                    around_last_computer_hit_set=around_last_computer_hit_set,
-                    computer_available_to_fire_set=computer_available_to_fire_set,
-                    dotted_set_for_computer_not_to_shoot=dotted_set_for_computer_not_to_shoot,
-                    hit_blocks_for_computer_not_to_shoot=hit_blocks_for_computer_not_to_shoot,
-                    last_hits_list=last_hits_list,
                 )
             # If the ship is destroyed
             if not elem:
                 update_destroyed_ships(
                     ind=ind,
                     computer_turn=computer_turn,
-                    dotted_set=dotted_set,
-                    dotted_set_for_computer_not_to_shoot=dotted_set_for_computer_not_to_shoot,
-                    hit_blocks=hit_blocks,
-                    hit_blocks_for_computer_not_to_shoot=hit_blocks_for_computer_not_to_shoot,
                     opponents_ships_list_original_copy=opponents_ships_list_original_copy,
                 )
                 if computer_turn:
@@ -89,18 +92,11 @@ def check_hit_or_miss(
             return True
     add_missed_block_to_dotted_set(
         fired_block=fired_block,
-        dotted_set=dotted_set,
-        dotted_set_for_computer_not_to_shoot=dotted_set_for_computer_not_to_shoot,
     )
     if computer_turn:
         update_around_last_computer_hit(
             fired_block=fired_block,
             computer_hits=False,
-            around_last_computer_hit_set=around_last_computer_hit_set,
-            computer_available_to_fire_set=computer_available_to_fire_set,
-            dotted_set_for_computer_not_to_shoot=dotted_set_for_computer_not_to_shoot,
-            hit_blocks_for_computer_not_to_shoot=hit_blocks_for_computer_not_to_shoot,
-            last_hits_list=last_hits_list,
         )
     return False
 
@@ -109,10 +105,6 @@ def update_destroyed_ships(
     *,
     ind: int,
     computer_turn: bool,
-    dotted_set: set,
-    dotted_set_for_computer_not_to_shoot: set,
-    hit_blocks: set,
-    hit_blocks_for_computer_not_to_shoot: set,
     opponents_ships_list_original_copy: list,
 ) -> None:
     """
@@ -124,23 +116,18 @@ def update_destroyed_ships(
         update_dotted_and_hit_sets(
             fired_block=ship[i],
             computer_turn=computer_turn,
-            dotted_set=dotted_set,
-            hit_blocks_for_computer_not_to_shoot=hit_blocks_for_computer_not_to_shoot,
-            hit_blocks=hit_blocks,
-            dotted_set_for_computer_not_to_shoot=dotted_set_for_computer_not_to_shoot,
             diagonal_only=False,
         )
+    if computer_turn:
+        human_destroyed_ships_count[len(ship)] += 1
+    else:
+        computer_destroyed_ships_count[len(ship)] += 1
 
 
 def update_around_last_computer_hit(
     *,
     fired_block: tuple,
     computer_hits: bool,
-    around_last_computer_hit_set: set,
-    computer_available_to_fire_set: set,
-    dotted_set_for_computer_not_to_shoot: set,
-    hit_blocks_for_computer_not_to_shoot: set,
-    last_hits_list: list,
 ) -> None:
     """
     Updates around_last_computer_hit_set (which is used to choose for computer to fire from) if it
@@ -149,10 +136,11 @@ def update_around_last_computer_hit(
     around_last_computer_hit_set makes computer choose the right blocks to quickly destroy the ship
     instead of just randomly shooting at completely random blocks.
     """
+    global around_last_computer_hit_set, computer_available_to_fire_set
     if computer_hits and fired_block in around_last_computer_hit_set:
-        around_last_computer_hit_set = computer_hits_twice(last_hits_list=last_hits_list)
+        around_last_computer_hit_set = computer_hits_twice()
     elif computer_hits and fired_block not in around_last_computer_hit_set:
-        computer_first_hit(fired_block=fired_block, around_last_computer_hit_set=around_last_computer_hit_set)
+        computer_first_hit(fired_block=fired_block)
     elif not computer_hits:
         around_last_computer_hit_set.discard(fired_block)
 
@@ -162,7 +150,7 @@ def update_around_last_computer_hit(
     computer_available_to_fire_set -= dotted_set_for_computer_not_to_shoot
 
 
-def computer_first_hit(*, fired_block: tuple, around_last_computer_hit_set: set) -> None:
+def computer_first_hit(*, fired_block: tuple) -> None:
     """
     Adds blocks above, below, to the right and to the left from the block hit
     by computer to a temporary set for computer to choose its next shot from.
@@ -180,10 +168,7 @@ def computer_first_hit(*, fired_block: tuple, around_last_computer_hit_set: set)
         around_last_computer_hit_set.add((x_hit, y_hit + 1))
 
 
-def computer_hits_twice(
-    *,
-    last_hits_list: list,
-) -> set:
+def computer_hits_twice() -> set:
     """
     Adds blocks before and after two or more blocks of a ship to a temporary list
     for computer to finish the ship faster.
@@ -215,10 +200,6 @@ def update_dotted_and_hit_sets(
     *,
     fired_block: tuple,
     computer_turn: bool,
-    dotted_set: set,
-    hit_blocks_for_computer_not_to_shoot: set,
-    hit_blocks: set,
-    dotted_set_for_computer_not_to_shoot: set,
     diagonal_only: bool = True,
 ) -> None:
     """
@@ -226,6 +207,7 @@ def update_dotted_and_hit_sets(
     by computer). Adds all diagonal blocks or all-around chosen block to a separate set
     block: hit block (tuple)
     """
+    global dotted_set, hit_blocks
     x, y = fired_block
     a = 15 * computer_turn
     b = 11 + 15 * computer_turn
@@ -238,17 +220,11 @@ def update_dotted_and_hit_sets(
     for i in range(-1, 2):
         for j in range(-1, 2):
             if (not diagonal_only or i != 0 and j != 0) and a < x + i < b and 0 < y + j < 11:
-                add_missed_block_to_dotted_set(
-                    fired_block=(x + i, y + j),
-                    dotted_set=dotted_set,
-                    dotted_set_for_computer_not_to_shoot=dotted_set_for_computer_not_to_shoot,
-                )
+                add_missed_block_to_dotted_set(fired_block=(x + i, y + j))
     dotted_set -= hit_blocks
 
 
-def add_missed_block_to_dotted_set(
-    *, fired_block: tuple, dotted_set: set, dotted_set_for_computer_not_to_shoot: set
-) -> None:
+def add_missed_block_to_dotted_set(*, fired_block: tuple) -> None:
     """
     Adds a fired_block to the set of missed shots (if fired_block is a miss then) to then draw dots on them.
     Also needed for computer to remove these dotted blocks from the set of available blocks for it to shoot from.

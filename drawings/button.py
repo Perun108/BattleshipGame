@@ -23,7 +23,7 @@ class Button:
         __message (str): explanatory message to print on screen
         __x_start (int): horizontal offset where to start drawing button
         __y_start (int): vertical offset where to start drawing button
-        rect_for_draw (tuple of four ints): button's rectangle to be drawn
+        __rect_for_draw (tuple of four ints): button's rectangle to be drawn
         rect (pygame Rect): pygame Rect object
         __rect_for_button_title (tuple of two ints): rectangle within button to print text in it
         __color (tuple): color of button (Default is BLACK, hovered is GREEN_BLUE, disabled is LIGHT_GRAY)
@@ -43,8 +43,8 @@ class Button:
         self.__button_height = self.__title_height + BLOCK_SIZE
         self.__x_start = x_offset
         self.__y_start = UPPER_MARGIN + 10 * BLOCK_SIZE + self.__button_height
-        self.rect_for_draw = self.__x_start, self.__y_start, self.__button_width, self.__button_height
-        self.rect = pygame.Rect(self.rect_for_draw)
+        self.__rect_for_draw = self.__x_start, self.__y_start, self.__button_width, self.__button_height
+        self.rect = pygame.Rect(self.__rect_for_draw)
         self.__rect_for_button_title = (
             self.__x_start + self.__button_width / 2 - self.__title_width / 2,
             self.__y_start + self.__button_height / 2 - self.__title_height / 2,
@@ -59,7 +59,7 @@ class Button:
         """
         if not color:
             color = self.__color
-        pygame.draw.rect(screen, color, self.rect_for_draw)
+        pygame.draw.rect(screen, color, self.__rect_for_draw)
         text_to_blit = self.__font.render(self.__title, True, text_color)
         screen.blit(text_to_blit, self.__rect_for_button_title)
 

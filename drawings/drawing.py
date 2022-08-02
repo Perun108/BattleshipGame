@@ -10,6 +10,10 @@ from game_elements.constants import (
     UPPER_MARGIN,
     WHITE,
 )
+from game_logic.game_logic import (
+    computer_destroyed_ships_count,
+    human_destroyed_ships_count,
+)
 
 pygame.init()
 screen = pygame.display.set_mode(SIZE)
@@ -78,3 +82,13 @@ def show_message_at_rect_center(message, rect, font=font, message_color=RED, bac
     message_to_blit = font.render(message, True, message_color)
     screen.fill(background_color, background_rect)
     screen.blit(message_to_blit, (x_start, y_start))
+
+
+def print_destroyed_ships_count(font):
+    for ship, count in human_destroyed_ships_count.items():
+        text = font.render(f"{ship}: {count}", True, RED)
+        screen.blit(text, (LEFT_MARGIN + 27 * BLOCK_SIZE, UPPER_MARGIN + 2 * BLOCK_SIZE + ship * BLOCK_SIZE))
+
+    for ship, count in computer_destroyed_ships_count.items():
+        text = font.render(f"{ship}: {count}", True, RED)
+        screen.blit(text, (LEFT_MARGIN - 4 * BLOCK_SIZE, UPPER_MARGIN + 2 * BLOCK_SIZE + ship * BLOCK_SIZE))
