@@ -1,7 +1,7 @@
 from random import choice
 from typing import Callable
 
-from game_elements.random_ships import AutoShips
+from game_elements.autoships import AutoShips
 
 ### COMPUTER DATA ###
 computer_available_to_fire_set = {(x, y) for x in range(16, 26) for y in range(1, 11)}
@@ -16,8 +16,8 @@ hit_blocks = set()
 dotted_set = set()
 destroyed_computer_ships = []
 
-human_destroyed_ships_count = {4: 0, 3: 0, 2: 0, 1: 0}
-computer_destroyed_ships_count = {4: 0, 3: 0, 2: 0, 1: 0}
+human_destroyed_ships_count = {4: 0, 3: 0, 2: 0, 1: 0, "#": 0}
+computer_destroyed_ships_count = {4: 0, 3: 0, 2: 0, 1: 0, "#": 0}
 
 
 def computer_shoots() -> tuple:
@@ -111,6 +111,8 @@ def update_destroyed_ships(
     Adds blocks before and after a ship to dotted_set to draw dots on them.
     Adds all blocks in a ship to hit_blocks set to draw 'X's within a destroyed ship.
     """
+    global human_destroyed_ships_count, computer_destroyed_ships_count
+
     ship = sorted(opponents_ships_list_original_copy[ind])
     for i in range(-1, 1):
         update_dotted_and_hit_sets(
@@ -120,8 +122,10 @@ def update_destroyed_ships(
         )
     if computer_turn:
         human_destroyed_ships_count[len(ship)] += 1
+        human_destroyed_ships_count["#"] += 1
     else:
         computer_destroyed_ships_count[len(ship)] += 1
+        computer_destroyed_ships_count["#"] += 1
 
 
 def update_around_last_computer_hit(

@@ -9,10 +9,14 @@ from drawings.drawing import (
     draw_from_dotted_set,
     draw_hit_blocks,
     draw_ships,
+    font,
+    game_over_font,
     print_destroyed_ships_count,
+    screen,
     show_message_at_rect_center,
 )
 from drawings.manual_ships import manually_create_new_ship
+from game_elements.autoships import AutoShips
 from game_elements.constants import (
     AUTO_BUTTON_PLACE,
     BLACK,
@@ -37,7 +41,6 @@ from game_elements.constants import (
     UPPER_MARGIN,
     WHITE,
 )
-from game_elements.random_ships import AutoShips
 from game_logic.game_logic import (
     around_last_computer_hit_set,
     check_hit_or_miss,
@@ -52,26 +55,6 @@ from game_logic.game_logic import (
 )
 
 pygame.init()
-
-screen = pygame.display.set_mode(SIZE)
-pygame.display.set_caption("BattleShip")
-
-icon = pygame.image.load("media/BattleShip.png")
-pygame.display.set_icon(icon)
-
-font = pygame.font.SysFont("notosans", FONT_SIZE)
-game_over_font = pygame.font.SysFont("notosans", GAME_OVER_FONT_SIZE)
-
-# Create AUTO and MANUAL buttons and explanatory message for them
-auto_button = Button(AUTO_BUTTON_PLACE, "AUTO", HOW_TO_CREATE_SHIPS_MESSAGE, font)
-manual_button = Button(MANUAL_BUTTON_PLACE, "MANUAL", HOW_TO_CREATE_SHIPS_MESSAGE, font)
-
-# Create UNDO message and button
-undo_button = Button(UNDO_BUTTON_PLACE, "UNDO LAST SHIP", "", font)
-
-# Create PLAY AGAIN and QUIT buttons and message for them
-play_again_button = Button(PLAY_AGAIN_BUTTON_PLACE, "PLAY AGAIN", PLAY_AGAIN_MESSAGE, font)
-quit_game_button = Button(MANUAL_BUTTON_PLACE, "QUIT", PLAY_AGAIN_MESSAGE, font)
 
 
 def main():
@@ -88,9 +71,20 @@ def main():
     used_blocks_for_manual_drawing = set()
     num_ships_list = [0, 0, 0, 0]
 
+    # Create AUTO and MANUAL buttons and explanatory message for them
+    auto_button = Button(AUTO_BUTTON_PLACE, "AUTO", HOW_TO_CREATE_SHIPS_MESSAGE, font)
+    manual_button = Button(MANUAL_BUTTON_PLACE, "MANUAL", HOW_TO_CREATE_SHIPS_MESSAGE, font)
+
+    # Create UNDO message and button
+    undo_button = Button(UNDO_BUTTON_PLACE, "UNDO LAST SHIP", "", font)
+
+    # Create PLAY AGAIN and QUIT buttons and message for them
+    play_again_button = Button(PLAY_AGAIN_BUTTON_PLACE, "PLAY AGAIN", PLAY_AGAIN_MESSAGE, font)
+    quit_game_button = Button(MANUAL_BUTTON_PLACE, "QUIT", PLAY_AGAIN_MESSAGE, font)
+
     screen.fill(WHITE)
-    Grid(title="COMPUTER", offset=0, font=font, letters=LETTERS, line_color=BLACK, text_color=BLACK)
-    Grid(title="HUMAN", offset=15, font=font, letters=LETTERS, line_color=BLACK, text_color=BLACK)
+    Grid(title="COMPUTER", offset=0, font=font, letters=LETTERS, line_color=BLACK, text_color=BLACK)  # type: ignore
+    Grid(title="HUMAN", offset=15, font=font, letters=LETTERS, line_color=BLACK, text_color=BLACK)  # type: ignore
     # Create computer ships
     computer = AutoShips(0)
     computer_ships_working = copy.deepcopy(computer.ships)
@@ -123,7 +117,7 @@ def main():
 
     while ships_not_created:
         screen.fill(WHITE, RECT_FOR_GRIDS)
-        Grid(title="COMPUTER", offset=0, font=font, letters=LETTERS, line_color=BLACK, text_color=BLACK)
+        Grid(title="COMPUTER", offset=0, font=font, letters=LETTERS, line_color=BLACK, text_color=BLACK)  # type: ignore
         Grid(title="HUMAN", offset=15, font=font, letters=LETTERS, line_color=BLACK, text_color=BLACK)
         undo_button.draw()
         undo_button.print_message()
@@ -228,10 +222,10 @@ def main():
 
         # draw_ships(computer.ships)
         if not computer.ships_set:
-            show_message_at_rect_center("YOU WON!", (0, 0, SIZE[0], SIZE[1]), game_over_font)
+            show_message_at_rect_center("YOU WIN!", (0, 0, SIZE[0], SIZE[1]), game_over_font)
             game_over = True
         if not human_ships_set:
-            show_message_at_rect_center("YOU LOST!", (0, 0, SIZE[0], SIZE[1]), game_over_font)
+            show_message_at_rect_center("YOU LOSE!", (0, 0, SIZE[0], SIZE[1]), game_over_font)
             game_over = True
 
         print_destroyed_ships_count(font)

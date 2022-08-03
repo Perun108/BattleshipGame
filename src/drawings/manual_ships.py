@@ -1,6 +1,6 @@
 import pygame
 
-from drawings.drawing import show_message_at_rect_center
+from drawings.drawing import screen, show_message_at_rect_center
 from game_elements.constants import (
     BLOCK_SIZE,
     LEFT_MARGIN,
@@ -16,8 +16,6 @@ from game_logic.game_logic import (
 )
 
 pygame.init()
-
-screen = pygame.display.set_mode(SIZE)
 
 
 def manually_create_new_ship(
