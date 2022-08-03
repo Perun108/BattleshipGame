@@ -28,6 +28,14 @@ repos:
       - id: pretty-format-json
         args: ["--autofix", "--no-sort-keys"]
 
+
+  - repo: https://gitlab.com/pycqa/flake8
+    rev: 3.9.2
+    hooks:
+      - id: flake8
+        args: ["--config=.flake8"]
+        additional_dependencies: [flake8-isort]
+
 # sets up .pre-commit-ci.yaml to ensure pre-commit dependencies stay up to date
 ci:
   autoupdate_schedule: weekly

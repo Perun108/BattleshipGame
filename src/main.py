@@ -21,8 +21,6 @@ from src.game_elements.constants import (
     AUTO_BUTTON_PLACE,
     BLACK,
     BLOCK_SIZE,
-    FONT_SIZE,
-    GAME_OVER_FONT_SIZE,
     HOW_TO_CREATE_SHIPS_MESSAGE,
     LEFT_MARGIN,
     LETTERS,
@@ -175,7 +173,7 @@ def main():
     while not game_over:
         screen.fill(WHITE, RECT_FOR_HUMAN_SHIPS_COUNT)
         screen.fill(WHITE, RECT_FOR_COMPUTER_SHIPS_COUNT)
-        if not (dotted_set | hit_blocks):
+        if not dotted_set | hit_blocks:
             show_message_at_rect_center("GAME STARTED! YOUR MOVE!", MESSAGE_RECT_COMPUTER)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
