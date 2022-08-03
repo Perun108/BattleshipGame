@@ -2,15 +2,15 @@
 
 import pygame
 
-from src.drawings.drawing import screen, show_message_at_rect_center
-from src.game_elements.constants import (
+from drawings.drawing import screen, show_message_at_rect_center
+from game_elements.constants import (
     BLOCK_SIZE,
     LEFT_MARGIN,
     RECT_FOR_MESSAGES_AND_BUTTONS,
     UPPER_MARGIN,
     WHITE,
 )
-from src.game_logic.game_logic import (
+from game_logic.game_logic import (
     is_ship_valid,
     update_used_blocks,
     validate_ships_numbers,

@@ -4,14 +4,8 @@ from typing import Optional
 
 import pygame
 
-from src.drawings.drawing import screen
-from src.game_elements.constants import (
-    BLACK,
-    BLOCK_SIZE,
-    GREEN_BLUE,
-    UPPER_MARGIN,
-    WHITE,
-)
+from drawings.drawing import screen
+from game_elements.constants import BLACK, BLOCK_SIZE, GREEN_BLUE, UPPER_MARGIN, WHITE
 
 pygame.init()
 

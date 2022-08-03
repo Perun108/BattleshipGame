@@ -2,7 +2,7 @@
 
 import pygame
 
-from src.game_elements.constants import (
+from game_elements.constants import (
     BLACK,
     BLOCK_SIZE,
     FONT_SIZE,
@@ -13,7 +13,7 @@ from src.game_elements.constants import (
     UPPER_MARGIN,
     WHITE,
 )
-from src.game_logic.game_logic import (
+from game_logic.game_logic import (
     computer_destroyed_ships_count,
     human_destroyed_ships_count,
 )

@@ -3,9 +3,9 @@ import sys
 
 import pygame
 
-from src.drawings import Grid
-from src.drawings.button import Button
-from src.drawings.drawing import (
+from drawings import Grid
+from drawings.button import Button
+from drawings.drawing import (
     draw_from_dotted_set,
     draw_hit_blocks,
     draw_ships,
@@ -15,9 +15,9 @@ from src.drawings.drawing import (
     screen,
     show_message_at_rect_center,
 )
-from src.drawings.manual_ships import manually_create_new_ship
-from src.game_elements.autoships import AutoShips
-from src.game_elements.constants import (
+from drawings.manual_ships import manually_create_new_ship
+from game_elements.autoships import AutoShips
+from game_elements.constants import (
     AUTO_BUTTON_PLACE,
     BLACK,
     BLOCK_SIZE,
@@ -39,7 +39,7 @@ from src.game_elements.constants import (
     UPPER_MARGIN,
     WHITE,
 )
-from src.game_logic.game_logic import (
+from game_logic.game_logic import (
     around_last_computer_hit_set,
     check_hit_or_miss,
     computer_shoots,
