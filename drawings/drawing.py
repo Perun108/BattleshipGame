@@ -84,11 +84,15 @@ def show_message_at_rect_center(message, rect, font=font, message_color=RED, bac
     screen.blit(message_to_blit, (x_start, y_start))
 
 
-def print_destroyed_ships_count(font):
+def print_destroyed_ships_count(font: pygame.font.Font):
     for ship, count in human_destroyed_ships_count.items():
+        title = font.render("Ships", True, RED)
         text = font.render(f"{ship}: {count}", True, RED)
+        screen.blit(title, (LEFT_MARGIN + 27 * BLOCK_SIZE, UPPER_MARGIN + 2 * BLOCK_SIZE))
         screen.blit(text, (LEFT_MARGIN + 27 * BLOCK_SIZE, UPPER_MARGIN + 2 * BLOCK_SIZE + ship * BLOCK_SIZE))
 
     for ship, count in computer_destroyed_ships_count.items():
+        title = font.render("Ships", True, RED)
         text = font.render(f"{ship}: {count}", True, RED)
+        screen.blit(title, (LEFT_MARGIN - 4 * BLOCK_SIZE, UPPER_MARGIN + 2 * BLOCK_SIZE))
         screen.blit(text, (LEFT_MARGIN - 4 * BLOCK_SIZE, UPPER_MARGIN + 2 * BLOCK_SIZE + ship * BLOCK_SIZE))
