@@ -3,9 +3,9 @@ import sys
 
 import pygame
 
-from drawings import Grid
-from drawings.button import Button
-from drawings.drawing import (
+from src.drawings import Grid
+from src.drawings.button import Button
+from src.drawings.drawing import (
     draw_from_dotted_set,
     draw_hit_blocks,
     draw_ships,
@@ -15,9 +15,9 @@ from drawings.drawing import (
     screen,
     show_message_at_rect_center,
 )
-from drawings.manual_ships import manually_create_new_ship
-from game_elements.autoships import AutoShips
-from game_elements.constants import (
+from src.drawings.manual_ships import manually_create_new_ship
+from src.game_elements.autoships import AutoShips
+from src.game_elements.constants import (
     AUTO_BUTTON_PLACE,
     BLACK,
     BLOCK_SIZE,
@@ -41,7 +41,7 @@ from game_elements.constants import (
     UPPER_MARGIN,
     WHITE,
 )
-from game_logic.game_logic import (
+from src.game_logic.game_logic import (
     around_last_computer_hit_set,
     check_hit_or_miss,
     computer_shoots,
@@ -58,6 +58,13 @@ pygame.init()
 
 
 def main():
+    """
+    The main function of the game where the following things happen:
+    - decision how to create human ships (auto or manual)
+    - optional manual creation of human ships
+    - game loop
+    - exit from the game
+    """
     ships_creation_not_decided = True
     ships_not_created = True
     drawing = False
@@ -142,7 +149,6 @@ def main():
                 ship_size = (0, 0)
             elif drawing and event.type == pygame.MOUSEMOTION:
                 x_end, y_end = event.pos
-                end = x_end, y_end
                 ship_size = x_end - x_start, y_end - y_start
             elif drawing and event.type == pygame.MOUSEBUTTONUP:
                 x_end, y_end = event.pos

@@ -1,6 +1,8 @@
+"""Module for drawing."""
+
 import pygame
 
-from game_elements.constants import (
+from src.game_elements.constants import (
     BLACK,
     BLOCK_SIZE,
     FONT_SIZE,
@@ -11,7 +13,7 @@ from game_elements.constants import (
     UPPER_MARGIN,
     WHITE,
 )
-from game_logic.game_logic import (
+from src.game_logic.game_logic import (
     computer_destroyed_ships_count,
     human_destroyed_ships_count,
 )
@@ -107,12 +109,12 @@ def print_destroyed_ships_count(font: pygame.font.Font, color: tuple = RED) -> N
         title = font.render("Ships", True, color)
         text = font.render(f"{ship}: {count}", True, color)
         screen.blit(title, (LEFT_MARGIN + 27 * BLOCK_SIZE, UPPER_MARGIN + 2 * BLOCK_SIZE))
-        num = ship if type(ship) == int else 5
+        num = ship if isinstance(ship, int) else 5
         screen.blit(text, (LEFT_MARGIN + 27 * BLOCK_SIZE, UPPER_MARGIN + 2 * BLOCK_SIZE + num * BLOCK_SIZE))
 
     for ship, count in computer_destroyed_ships_count.items():
         title = font.render("Ships", True, color)
         text = font.render(f"{ship}: {count}", True, color)
         screen.blit(title, (LEFT_MARGIN - 4 * BLOCK_SIZE, UPPER_MARGIN + 2 * BLOCK_SIZE))
-        num = ship if type(ship) == int else 5
+        num = ship if isinstance(ship, int) else 5
         screen.blit(text, (LEFT_MARGIN - 4 * BLOCK_SIZE, UPPER_MARGIN + 2 * BLOCK_SIZE + num * BLOCK_SIZE))

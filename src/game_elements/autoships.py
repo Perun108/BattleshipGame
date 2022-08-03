@@ -1,3 +1,5 @@
+"""Creates human ships automatically."""
+
 from random import choice, randint
 
 

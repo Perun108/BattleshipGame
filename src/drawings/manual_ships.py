@@ -1,7 +1,9 @@
+"""Create ships manually."""
+
 import pygame
 
-from drawings.drawing import screen, show_message_at_rect_center
-from game_elements.constants import (
+from src.drawings.drawing import screen, show_message_at_rect_center
+from src.game_elements.constants import (
     BLOCK_SIZE,
     LEFT_MARGIN,
     RECT_FOR_MESSAGES_AND_BUTTONS,
@@ -9,7 +11,7 @@ from game_elements.constants import (
     UPPER_MARGIN,
     WHITE,
 )
-from game_logic.game_logic import (
+from src.game_logic.game_logic import (
     is_ship_valid,
     update_used_blocks,
     validate_ships_numbers,
@@ -29,6 +31,9 @@ def manually_create_new_ship(
     x_end,
     y_end,
 ) -> None:
+    """
+    Validate each manually created ship and add it to the list of ships.
+    """
     start_block = ((x_start - LEFT_MARGIN) // BLOCK_SIZE + 1, (y_start - UPPER_MARGIN) // BLOCK_SIZE + 1)
     end_block = ((x_end - LEFT_MARGIN) // BLOCK_SIZE + 1, (y_end - UPPER_MARGIN) // BLOCK_SIZE + 1)
     if start_block > end_block:

@@ -1,7 +1,9 @@
+"""Creates grids on a field."""
+
 import pygame
 
-from drawings.drawing import screen
-from game_elements.constants import (
+from src.drawings.drawing import screen
+from src.game_elements.constants import (
     BLOCK_SIZE,
     FONT_SIZE,
     LEFT_MARGIN,

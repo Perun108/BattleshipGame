@@ -1,7 +1,9 @@
+"""Module for the logic behind the game."""
+
 from random import choice
 from typing import Callable
 
-from game_elements.autoships import AutoShips
+from src.game_elements.autoships import AutoShips
 
 ### COMPUTER DATA ###
 computer_available_to_fire_set = {(x, y) for x in range(16, 26) for y in range(1, 11)}
@@ -111,8 +113,6 @@ def update_destroyed_ships(
     Adds blocks before and after a ship to dotted_set to draw dots on them.
     Adds all blocks in a ship to hit_blocks set to draw 'X's within a destroyed ship.
     """
-    global human_destroyed_ships_count, computer_destroyed_ships_count
-
     ship = sorted(opponents_ships_list_original_copy[ind])
     for i in range(-1, 1):
         update_dotted_and_hit_sets(
@@ -266,6 +266,9 @@ def validate_ships_numbers(*, ship: list, num_ships_list: list) -> bool:
 
 
 def update_used_blocks(*, ship: list, method: Callable) -> None:
+    """
+    Adds ship's blocks to a set of used blocks not to use them again.
+    """
     for block in ship:
         for i in range(-1, 2):
             for j in range(-1, 2):
