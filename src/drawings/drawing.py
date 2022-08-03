@@ -1,9 +1,12 @@
+"""Module for drawing."""
+
 import pygame
 
 from game_elements.constants import (
     BLACK,
     BLOCK_SIZE,
     FONT_SIZE,
+    GAME_OVER_FONT_SIZE,
     LEFT_MARGIN,
     RED,
     SIZE,
@@ -17,10 +20,15 @@ from game_logic.game_logic import (
 
 pygame.init()
 screen = pygame.display.set_mode(SIZE)
+pygame.display.set_caption("BattleShip")
+icon = pygame.image.load("media/BattleShip.png")
+pygame.display.set_icon(icon)
+
 font = pygame.font.SysFont("notosans", FONT_SIZE)
+game_over_font = pygame.font.SysFont("notosans", GAME_OVER_FONT_SIZE)
 
 
-def draw_ships(ships_coordinates_list, ships_color=BLACK):
+def draw_ships(ships_coordinates_list: list, ships_color: tuple = BLACK) -> None:
     """
     Draws rectangles around the blocks that are occupied by a ship
     Args:
@@ -41,7 +49,7 @@ def draw_ships(ships_coordinates_list, ships_color=BLACK):
         pygame.draw.rect(screen, ships_color, ((x, y), (ship_width, ship_height)), width=BLOCK_SIZE // 10)
 
 
-def draw_from_dotted_set(dotted_set_to_draw_from, dots_color=BLACK):
+def draw_from_dotted_set(dotted_set_to_draw_from: set, dots_color: tuple = BLACK) -> None:
     """
     Draws dots in the center of all blocks in the dotted_set
     """
@@ -54,7 +62,7 @@ def draw_from_dotted_set(dotted_set_to_draw_from, dots_color=BLACK):
         )
 
 
-def draw_hit_blocks(hit_blocks_to_draw_from, hit_blocks_color=BLACK):
+def draw_hit_blocks(hit_blocks_to_draw_from: set, hit_blocks_color: tuple = BLACK) -> None:
     """
     Draws 'X' in the blocks that were successfully hit either by computer or by human
     """
@@ -65,7 +73,13 @@ def draw_hit_blocks(hit_blocks_to_draw_from, hit_blocks_color=BLACK):
         pygame.draw.line(screen, hit_blocks_color, (x1, y1 + BLOCK_SIZE), (x1 + BLOCK_SIZE, y1), BLOCK_SIZE // 6)
 
 
-def show_message_at_rect_center(message, rect, font=font, message_color=RED, background_color=WHITE):
+def show_message_at_rect_center(
+    message: str,
+    rect: tuple,
+    font: pygame.font.Font = font,
+    message_color: tuple = RED,
+    background_color: tuple = WHITE,
+) -> None:
     """
     Prints message to screen at a given rect's center.
     Args:
@@ -84,11 +98,23 @@ def show_message_at_rect_center(message, rect, font=font, message_color=RED, bac
     screen.blit(message_to_blit, (x_start, y_start))
 
 
-def print_destroyed_ships_count(font):
+def print_destroyed_ships_count(font: pygame.font.Font, color: tuple = RED) -> None:
+    """
+    Prints numbers of destroyed ships at the grid's side.
+    Args:
+        font (pygame font object, optional): What font to use to print message.
+        color (tuple, optional): Color of the message. Defaults to RED.
+    """
     for ship, count in human_destroyed_ships_count.items():
-        text = font.render(f"{ship}: {count}", True, RED)
-        screen.blit(text, (LEFT_MARGIN + 27 * BLOCK_SIZE, UPPER_MARGIN + 2 * BLOCK_SIZE + ship * BLOCK_SIZE))
+        title = font.render("Ships", True, color)
+        text = font.render(f"{ship}: {count}", True, color)
+        screen.blit(title, (LEFT_MARGIN + 27 * BLOCK_SIZE, UPPER_MARGIN + 2 * BLOCK_SIZE))
+        num = ship if isinstance(ship, int) else 5
+        screen.blit(text, (LEFT_MARGIN + 27 * BLOCK_SIZE, UPPER_MARGIN + 2 * BLOCK_SIZE + num * BLOCK_SIZE))
 
     for ship, count in computer_destroyed_ships_count.items():
-        text = font.render(f"{ship}: {count}", True, RED)
-        screen.blit(text, (LEFT_MARGIN - 4 * BLOCK_SIZE, UPPER_MARGIN + 2 * BLOCK_SIZE + ship * BLOCK_SIZE))
+        title = font.render("Ships", True, color)
+        text = font.render(f"{ship}: {count}", True, color)
+        screen.blit(title, (LEFT_MARGIN - 4 * BLOCK_SIZE, UPPER_MARGIN + 2 * BLOCK_SIZE))
+        num = ship if isinstance(ship, int) else 5
+        screen.blit(text, (LEFT_MARGIN - 4 * BLOCK_SIZE, UPPER_MARGIN + 2 * BLOCK_SIZE + num * BLOCK_SIZE))

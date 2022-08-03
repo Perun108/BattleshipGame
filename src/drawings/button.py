@@ -1,17 +1,13 @@
+"""Module for buttons."""
+
+from typing import Optional
+
 import pygame
 
-from game_elements.constants import (
-    BLACK,
-    BLOCK_SIZE,
-    GREEN_BLUE,
-    SIZE,
-    UPPER_MARGIN,
-    WHITE,
-)
+from drawings.drawing import screen
+from game_elements.constants import BLACK, BLOCK_SIZE, GREEN_BLUE, UPPER_MARGIN, WHITE
 
 pygame.init()
-
-screen = pygame.display.set_mode(SIZE)
 
 
 class Button:
@@ -34,7 +30,9 @@ class Button:
     print_message(): Prints explanatory message next to button
     """
 
-    def __init__(self, x_offset, button_title, message_to_show, font, color=BLACK):
+    def __init__(
+        self, x_offset: int, button_title: str, message_to_show: str, font: pygame.font.Font, color: tuple = BLACK
+    ) -> None:
         self.__title = button_title
         self.__font = font
         self.__title_width, self.__title_height = self.__font.size(self.__title)
@@ -51,7 +49,7 @@ class Button:
         )
         self.__color = color
 
-    def draw(self, color=None, text_color=WHITE):
+    def draw(self, color: Optional[tuple] = None, text_color: tuple = WHITE) -> None:
         """
         Draws button as a rectangle of color (default is BLACK)
         Args:
@@ -63,7 +61,7 @@ class Button:
         text_to_blit = self.__font.render(self.__title, True, text_color)
         screen.blit(text_to_blit, self.__rect_for_button_title)
 
-    def change_color_on_hover(self, hover_color=GREEN_BLUE):
+    def change_color_on_hover(self, hover_color: tuple = GREEN_BLUE) -> None:
         """
         Draws button as a rectangle of GREEN_BLUE color
         """
@@ -71,7 +69,7 @@ class Button:
         if self.rect.collidepoint(mouse):
             self.draw(hover_color)
 
-    def print_message(self, text_color=BLACK):
+    def print_message(self, text_color: tuple = BLACK) -> None:
         """
         Prints explanatory message next to button
         """

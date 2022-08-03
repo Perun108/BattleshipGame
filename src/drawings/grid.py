@@ -1,15 +1,15 @@
+"""Creates grids on a field."""
+
 import pygame
 
+from drawings.drawing import screen
 from game_elements.constants import (
     BLOCK_SIZE,
     FONT_SIZE,
     LEFT_MARGIN,
     LINE_WIDTH,
-    SIZE,
     UPPER_MARGIN,
 )
-
-screen = pygame.display.set_mode(SIZE)
 
 
 class Grid:
@@ -37,7 +37,7 @@ class Grid:
         letters: list,
         line_color: tuple,
         text_color: tuple,
-    ):
+    ) -> None:
         """
         title(str): Players' name to be displayed on the top of his grid
         offset (int): Where the grid starts (in number of blocks)
@@ -53,7 +53,7 @@ class Grid:
         self.__add_numbers_and_letters()
         self.__sign_grid()
 
-    def __draw(self):
+    def __draw(self) -> None:
         """
         Draws two grids for both players
         """
@@ -80,7 +80,7 @@ class Grid:
                 LINE_WIDTH,
             )
 
-    def __add_numbers_and_letters(self):
+    def __add_numbers_and_letters(self) -> None:
         """
         Draws numbers 1-10 along vertical and adds letters below horizontal
         lines for both grids
@@ -105,7 +105,7 @@ class Grid:
             # Letters (horizontal)
             screen.blit(letters_hor, letters_blit_destination)
 
-    def __sign_grid(self):
+    def __sign_grid(self) -> None:
         """
         Puts players' names (titles) in the center above the grids
         """

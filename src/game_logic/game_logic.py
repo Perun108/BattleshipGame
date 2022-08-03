@@ -1,23 +1,25 @@
+"""Module for the logic behind the game."""
+
 from random import choice
 from typing import Callable
 
-from game_elements.random_ships import AutoShips
+from game_elements.autoships import AutoShips
 
-### COMPUTER DATA ###
+# ---COMPUTER DATA-----
 computer_available_to_fire_set = {(x, y) for x in range(16, 26) for y in range(1, 11)}
 around_last_computer_hit_set = set()
 
 dotted_set_for_computer_not_to_shoot = set()
 hit_blocks_for_computer_not_to_shoot = set()
 last_hits_list = []
-###################
+# --------------------
 
 hit_blocks = set()
 dotted_set = set()
 destroyed_computer_ships = []
 
-human_destroyed_ships_count = {4: 0, 3: 0, 2: 0, 1: 0}
-computer_destroyed_ships_count = {4: 0, 3: 0, 2: 0, 1: 0}
+human_destroyed_ships_count = {4: 0, 3: 0, 2: 0, 1: 0, "#": 0}
+computer_destroyed_ships_count = {4: 0, 3: 0, 2: 0, 1: 0, "#": 0}
 
 
 def computer_shoots() -> tuple:
@@ -120,8 +122,10 @@ def update_destroyed_ships(
         )
     if computer_turn:
         human_destroyed_ships_count[len(ship)] += 1
+        human_destroyed_ships_count["#"] += 1
     else:
         computer_destroyed_ships_count[len(ship)] += 1
+        computer_destroyed_ships_count["#"] += 1
 
 
 def update_around_last_computer_hit(
@@ -262,6 +266,9 @@ def validate_ships_numbers(*, ship: list, num_ships_list: list) -> bool:
 
 
 def update_used_blocks(*, ship: list, method: Callable) -> None:
+    """
+    Adds ship's blocks to a set of used blocks not to use them again.
+    """
     for block in ship:
         for i in range(-1, 2):
             for j in range(-1, 2):
