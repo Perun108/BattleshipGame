@@ -9,7 +9,6 @@ from src.game_elements.constants import (
     BLACK,
     BLOCK_SIZE,
     GREEN_BLUE,
-    SIZE,
     UPPER_MARGIN,
     WHITE,
 )

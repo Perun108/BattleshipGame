@@ -8,7 +8,6 @@ from src.game_elements.constants import (
     FONT_SIZE,
     LEFT_MARGIN,
     LINE_WIDTH,
-    SIZE,
     UPPER_MARGIN,
 )
 

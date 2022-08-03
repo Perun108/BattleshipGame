@@ -7,7 +7,6 @@ from src.game_elements.constants import (
     BLOCK_SIZE,
     LEFT_MARGIN,
     RECT_FOR_MESSAGES_AND_BUTTONS,
-    SIZE,
     UPPER_MARGIN,
     WHITE,
 )
