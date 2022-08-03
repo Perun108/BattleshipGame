@@ -8,6 +8,8 @@ Fully functional Battleship game for a human playing against computer written in
 
 ![image](https://user-images.githubusercontent.com/68146217/182583784-72e6d953-e872-41e0-aaa9-d259cad85acb.png)
 
+file:///home/brijabasi/Downloads/image(2).png![image](https://user-images.githubusercontent.com/68146217/182583991-8009aa81-874f-4e2e-aed8-2c962c560761.png)
+
 #### Drawing ships manually
 ![image](https://user-images.githubusercontent.com/68146217/182445250-b0190544-8bd9-410d-bdc0-a80a9f6085f2.png)
 
