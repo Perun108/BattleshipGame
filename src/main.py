@@ -3,21 +3,8 @@ import sys
 
 import pygame
 
-from drawings import Grid
-from drawings.button import Button
-from drawings.drawing import (
-    draw_from_dotted_set,
-    draw_hit_blocks,
-    draw_ships,
-    font,
-    game_over_font,
-    print_destroyed_ships_count,
-    screen,
-    show_message_at_rect_center,
-)
-from drawings.manual_ships import manually_create_new_ship
-from game_elements.autoships import AutoShips
-from game_elements.constants import (
+from elements.autoships import AutoShips
+from elements.constants import (
     AUTO_BUTTON_PLACE,
     BLACK,
     BLOCK_SIZE,
@@ -38,19 +25,37 @@ from game_elements.constants import (
     UNDO_BUTTON_PLACE,
     UPPER_MARGIN,
     WHITE,
+    X_OFFSET_FOR_COMPUTER_SHIPS_COUNT,
+    X_OFFSET_FOR_HUMAN_SHIPS_COUNT,
+    Y_OFFSET_FOR_SHIPS_COUNT,
 )
-from game_logic.game_logic import (
+from game_logic import (
     around_last_computer_hit_set,
     check_hit_or_miss,
+    computer_destroyed_ships_count,
     computer_shoots,
     destroyed_computer_ships,
     dotted_set,
     dotted_set_for_computer_not_to_shoot,
     hit_blocks,
     hit_blocks_for_computer_not_to_shoot,
+    human_destroyed_ships_count,
     last_hits_list,
     update_used_blocks,
 )
+from graphics import Grid
+from graphics.button import Button
+from graphics.drawing import (
+    draw_from_dotted_set,
+    draw_hit_blocks,
+    draw_ships,
+    font,
+    game_over_font,
+    print_destroyed_ships_count,
+    screen,
+    show_message_at_rect_center,
+)
+from graphics.manual_ships import manually_create_new_ship
 
 pygame.init()
 
@@ -224,7 +229,6 @@ def main():
         draw_ships(destroyed_computer_ships)
         draw_ships(human_ships_to_draw)
 
-        # draw_ships(computer.ships)
         if not computer.ships_set:
             show_message_at_rect_center("YOU WIN!", (0, 0, SIZE[0], SIZE[1]), game_over_font)
             game_over = True
@@ -232,7 +236,12 @@ def main():
             show_message_at_rect_center("YOU LOSE!", (0, 0, SIZE[0], SIZE[1]), game_over_font)
             game_over = True
 
-        print_destroyed_ships_count(font)
+        print_destroyed_ships_count(
+            X_OFFSET_FOR_HUMAN_SHIPS_COUNT, Y_OFFSET_FOR_SHIPS_COUNT, human_destroyed_ships_count, font
+        )
+        print_destroyed_ships_count(
+            X_OFFSET_FOR_COMPUTER_SHIPS_COUNT, Y_OFFSET_FOR_SHIPS_COUNT, computer_destroyed_ships_count, font
+        )
         pygame.display.update()
 
     while game_over:

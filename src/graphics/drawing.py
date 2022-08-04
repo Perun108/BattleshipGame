@@ -2,7 +2,7 @@
 
 import pygame
 
-from game_elements.constants import (
+from elements.constants import (
     BLACK,
     BLOCK_SIZE,
     FONT_SIZE,
@@ -12,10 +12,6 @@ from game_elements.constants import (
     SIZE,
     UPPER_MARGIN,
     WHITE,
-)
-from game_logic.game_logic import (
-    computer_destroyed_ships_count,
-    human_destroyed_ships_count,
 )
 
 pygame.init()
@@ -98,23 +94,18 @@ def show_message_at_rect_center(
     screen.blit(message_to_blit, (x_start, y_start))
 
 
-def print_destroyed_ships_count(font: pygame.font.Font, color: tuple = RED) -> None:
+def print_destroyed_ships_count(
+    x_offset: int, y_offset: int, count_dict: dict, font: pygame.font.Font, color: tuple = RED
+) -> None:
     """
     Prints numbers of destroyed ships at the grid's side.
     Args:
         font (pygame font object, optional): What font to use to print message.
         color (tuple, optional): Color of the message. Defaults to RED.
     """
-    for ship, count in human_destroyed_ships_count.items():
+    for ship, count in count_dict.items():
         title = font.render("Ships", True, color)
         text = font.render(f"{ship}: {count}", True, color)
-        screen.blit(title, (LEFT_MARGIN + 27 * BLOCK_SIZE, UPPER_MARGIN + 2 * BLOCK_SIZE))
+        screen.blit(title, (x_offset, y_offset))
         num = ship if isinstance(ship, int) else 5
-        screen.blit(text, (LEFT_MARGIN + 27 * BLOCK_SIZE, UPPER_MARGIN + 2 * BLOCK_SIZE + num * BLOCK_SIZE))
-
-    for ship, count in computer_destroyed_ships_count.items():
-        title = font.render("Ships", True, color)
-        text = font.render(f"{ship}: {count}", True, color)
-        screen.blit(title, (LEFT_MARGIN - 4 * BLOCK_SIZE, UPPER_MARGIN + 2 * BLOCK_SIZE))
-        num = ship if isinstance(ship, int) else 5
-        screen.blit(text, (LEFT_MARGIN - 4 * BLOCK_SIZE, UPPER_MARGIN + 2 * BLOCK_SIZE + num * BLOCK_SIZE))
+        screen.blit(text, (x_offset, y_offset + num * BLOCK_SIZE))

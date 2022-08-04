@@ -3,7 +3,7 @@
 from random import choice
 from typing import Callable
 
-from game_elements.autoships import AutoShips
+from elements.autoships import AutoShips
 
 # ---COMPUTER DATA-----
 computer_available_to_fire_set = {(x, y) for x in range(16, 26) for y in range(1, 11)}
