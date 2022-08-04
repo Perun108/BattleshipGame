@@ -2,14 +2,14 @@
 
 import pygame
 
-from drawings.drawing import screen
-from game_elements.constants import (
+from elements.constants import (
     BLOCK_SIZE,
     FONT_SIZE,
     LEFT_MARGIN,
     LINE_WIDTH,
     UPPER_MARGIN,
 )
+from graphics.drawing import screen
 
 
 class Grid:
